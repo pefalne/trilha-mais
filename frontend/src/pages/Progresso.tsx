@@ -53,7 +53,7 @@ export default function Progresso() {
           <View style={styles.cardMediaGeral}>
             <View style={styles.blocoMedia}>
               <Text style={styles.textoMediaGeral}>MÉDIA GERAL</Text>
-              <Text style={styles.valorMediaGeral}>
+              <Text style={styles.valorMediaGeral} numberOfLines={1}>
                 {Math.round(dados?.overallAccuracyRate ?? 0)}%
               </Text>
             </View>
@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   blocoMedia: {
-    flex: 1,
+    flexShrink: 0,
   },
   textoMediaGeral: {
     color: 'rgba(255, 255, 255, 0.9)',
@@ -193,12 +193,13 @@ const styles = StyleSheet.create({
     width: 1,
     height: '100%',
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    marginHorizontal: 16,
+    marginHorizontal: 12,
   },
   blocoEstatisticas: {
-    flex: 1.5,
+    flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
+    gap: 6,
   },
   estatisticaItem: {
     alignItems: 'center',

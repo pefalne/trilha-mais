@@ -41,8 +41,8 @@ export default function SubjectCard({ subject, onOpen }: SubjectCardProps) {
       </span>
 
       <span className="subject-card__footer">
-        <span className="subject-card__done">✓ {topicsDone} concluídos</span>
-        <span className="subject-card__pending">○ {pending} pendentes</span>
+        <span className="subject-card__done">✓ {topicsDone} {topicsDone === 1 ? 'concluído' : 'concluídos'}</span>
+        <span className="subject-card__pending">○ {pending} {pending === 1 ? 'pendente' : 'pendentes'}</span>
       </span>
     </button>
   );

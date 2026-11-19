@@ -11,7 +11,7 @@ interface ItemAba {
 }
 
 const abas: ItemAba[] = [
-  { chave: 'inicio', rotulo: 'Início', icone: '⌂' },
+  { chave: 'inicio', rotulo: 'Início', icone: '🏠' },
   { chave: 'agenda', rotulo: 'Agenda', icone: '🗓' },
   { chave: 'materias', rotulo: 'Matérias', icone: '📖' },
   { chave: 'progresso', rotulo: 'Progresso', icone: '📊' },

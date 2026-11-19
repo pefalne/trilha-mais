@@ -24,7 +24,7 @@ export default function CardProgressoGeral({
         <Text style={styles.rotulo}>Progresso geral</Text>
         <View style={styles.linhaSequencia}>
           <Text style={styles.emojiSequencia}>🔥</Text>
-          <Text style={styles.textoSequencia}>{diasSeguidos} dias seguidos</Text>
+          <Text style={styles.textoSequencia}>{diasSeguidos} {diasSeguidos === 1 ? 'dia seguido' : 'dias seguidos'}</Text>
         </View>
       </View>
 

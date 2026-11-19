@@ -38,9 +38,9 @@ export default function CardMateria({ materia, icone }: CardMateriaProps) {
 
       <View style={styles.linhaRodape}>
         <Text style={styles.textoConcluidos}>
-          ✓ {materia.concluidos} concluídos
+          ✓ {materia.concluidos} {materia.concluidos === 1 ? 'concluído' : 'concluídos'}
         </Text>
-        <Text style={styles.textoPendentes}>○ {materia.pendentes} pendentes</Text>
+        <Text style={styles.textoPendentes}>○ {materia.pendentes} {materia.pendentes === 1 ? 'pendente' : 'pendentes'}</Text>
       </View>
     </View>
   );
