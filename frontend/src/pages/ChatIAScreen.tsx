@@ -5,6 +5,7 @@ import {
 } from 'react-native';
 import { c, s, r } from '../theme/screenTheme';
 import { aiApi } from '../services/api';
+import TextoFormatado from '../components/TextoFormatado';
 
 type Autor = 'usuario' | 'ia';
 type Mensagem = { id: string; autor: Autor; texto: string };
@@ -93,9 +94,11 @@ export default function ChatIAScreen({ onBack }: Props) {
           }
           renderItem={({ item }) => (
             <View style={[st.balao, item.autor === 'usuario' ? st.balaoUsuario : st.balaoIA]}>
-              <Text style={item.autor === 'usuario' ? st.textoUsuario : st.textoIA}>
-                {item.texto}
-              </Text>
+              {item.autor === 'usuario' ? (
+                <Text style={st.textoUsuario}>{item.texto}</Text>
+              ) : (
+                <TextoFormatado texto={item.texto} estilo={st.textoIA} />
+              )}
             </View>
           )}
           ListFooterComponent={
