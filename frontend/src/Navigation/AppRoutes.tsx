@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Platform, View } from 'react-native';
+import { ActivityIndicator, Platform, StyleSheet, View } from 'react-native';
 import { NavigationContainer, createNavigationContainerRef } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Login from "../pages/TelaLogin";
@@ -17,12 +17,21 @@ import QuizScreen from '../pages/TelaQuiz';
 import ResultadoScreen from '../pages/TelaResultado';
 
 import { authApi, definirAoExpirarSessao, usersApi } from '../services/api';
+import useDesktop from '../utils/useDesktop';
+import MenuLateral from '../components/desktop/MenuLateral';
+import PainelMarca from '../components/desktop/PainelMarca';
+
+// Telas de entrada (sem menu); no computador elas ficam ao lado do painel da marca
+const ROTAS_ENTRADA = ['Login', 'Cadastro', 'RecuperacaoSenha'];
 
 const Stack = createNativeStackNavigator();
 const navegacaoRef = createNavigationContainerRef<any>();
 
 export default function AppRoutes() {
   const [rotaInicial, setRotaInicial] = useState<'Login' | 'Home' | null>(null);
+  const [rotaAtual, setRotaAtual] = useState<string | null>(null);
+  const desktop = useDesktop();
+  const atualizarRota = () => setRotaAtual(navegacaoRef.getCurrentRoute()?.name ?? null);
 
   useEffect(() => {
     // Sessão expirada em qualquer tela: volta para o login
@@ -74,8 +83,23 @@ export default function AppRoutes() {
     );
   }
 
+  const rota = rotaAtual ?? rotaInicial;
+  const entrada = ROTAS_ENTRADA.includes(rota);
+
+  // A mesma árvore é usada no celular e no computador (só mudam os estilos e o lado
+  // esquerdo), para o NavigationContainer não ser recriado ao redimensionar a janela.
   return (
-    <NavigationContainer ref={navegacaoRef}>
+    <View style={desktop ? estilos.pagina : estilos.cheio}>
+      {desktop ? (
+        entrada ? (
+          <PainelMarca />
+        ) : (
+          <MenuLateral rotaAtual={rota} aoIr={(nome) => navegacaoRef.isReady() && navegacaoRef.navigate(nome)} />
+        )
+      ) : null}
+      <View style={desktop ? (entrada ? estilos.ladoEntrada : estilos.area) : estilos.cheio}>
+        <View style={desktop && !entrada ? estilos.conteudo : estilos.cheio}>
+    <NavigationContainer ref={navegacaoRef} onReady={atualizarRota} onStateChange={atualizarRota}>
       <Stack.Navigator initialRouteName={rotaInicial} screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="Cadastro" component={Cadastro} />
@@ -130,5 +154,19 @@ export default function AppRoutes() {
         </Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>
+        </View>
+      </View>
+    </View>
   );
 }
+
+const estilos = StyleSheet.create({
+  cheio: { flex: 1 },
+  pagina: { flex: 1, flexDirection: 'row', backgroundColor: '#EEF1F8' },
+  area: { flex: 1, alignItems: 'center', paddingHorizontal: 32, paddingVertical: 24 },
+  conteudo: {
+    flex: 1, width: '100%', maxWidth: 1120, borderRadius: 24, overflow: 'hidden',
+    backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E4E7EC',
+  },
+  ladoEntrada: { width: 560, backgroundColor: '#FFFFFF' },
+});

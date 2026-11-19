@@ -12,6 +12,7 @@ import {
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 
 import BannerContinuar from '../components/BannerContinuar';
+import Grade from '../components/desktop/Grade';
 import BarraNavegacao, { ChaveAba } from '../components/BarraNavegacao';
 import CardEstatistica from '../components/CardEstatistica';
 import CardMateria from '../components/CardMateria';
@@ -157,6 +158,7 @@ export default function Home() {
             </TouchableOpacity>
           ) : null}
 
+          <Grade>
           {materias.map((materia) => (
             <TouchableOpacity 
               key={materia.id}
@@ -181,6 +183,7 @@ export default function Home() {
               />
             </TouchableOpacity>
           ))}
+          </Grade>
 
           {/* Continuar de onde parou */}
           {temContinuar ? (

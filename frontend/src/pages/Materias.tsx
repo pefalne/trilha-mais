@@ -15,6 +15,7 @@ import {
 } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 
+import Grade from '../components/desktop/Grade';
 import BarraNavegacao, { ChaveAba } from '../components/BarraNavegacao';
 import CardMateria from '../components/CardMateria';
 import { subjectsApi, paraMateriaTela } from '../services/api';
@@ -160,6 +161,7 @@ export default function Materias() {
           <Text style={styles.dica}>Segure o dedo sobre uma matéria para excluir.</Text>
         ) : null}
 
+        <Grade>
         {materias.map((materia) => (
           <TouchableOpacity
             key={materia.id}
@@ -181,6 +183,7 @@ export default function Materias() {
             />
           </TouchableOpacity>
         ))}
+        </Grade>
 
         <View style={styles.acoes}>
           <TouchableOpacity

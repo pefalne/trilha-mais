@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { colors, spacing, typography } from '../theme/tokens';
+import useDesktop from '../utils/useDesktop';
 
 export type ChaveAba = 'inicio' | 'agenda' | 'materias' | 'progresso' | 'perfil';
 
@@ -24,6 +25,9 @@ interface BarraNavegacaoProps {
 }
 
 export default function BarraNavegacao({ ativa, aoMudar }: BarraNavegacaoProps) {
+  // No computador a navegação fica no menu lateral (components/desktop/MenuLateral)
+  const desktop = useDesktop();
+  if (desktop) return null;
   return (
     <View style={styles.container}>
       {abas.map((aba) => {
