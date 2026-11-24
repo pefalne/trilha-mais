@@ -81,6 +81,17 @@ export default function Progresso() {
         <View style={styles.conteudoBranco}>
           <Text style={styles.tituloDesempenho}>Desempenho por matéria</Text>
 
+          {dados && desempenhoMaterias.length === 0 ? (
+            <View style={{ backgroundColor: '#F1F5F9', borderRadius: 14, padding: 18, marginTop: 4 }}>
+              <Text style={{ fontSize: 15, fontWeight: '700', color: '#1F2937', marginBottom: 4 }}>
+                Nada por aqui ainda
+              </Text>
+              <Text style={{ fontSize: 14, color: '#4B5563', lineHeight: 20 }}>
+                Cadastre uma matéria e faça um simulado: o desempenho de cada matéria aparece aqui.
+              </Text>
+            </View>
+          ) : null}
+
           {/* Lista de Barras de Progresso */}
           {desempenhoMaterias.map((materia) => (
             <View key={materia.id} style={styles.cardMateria}>
