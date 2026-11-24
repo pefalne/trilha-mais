@@ -132,8 +132,9 @@ class QuizControllerTest {
                 .andExpect(jsonPath("$.id").isNotEmpty())
                 .andExpect(jsonPath("$.title").value("Simulado de SQL"))
                 .andExpect(jsonPath("$.status").value("IN_PROGRESS"))
-                .andExpect(jsonPath("$.totalQuestions").value(2))
-                .andExpect(jsonPath("$.questions", hasSize(2)));
+                // Pediu 10: usa as 2 cadastradas e completa ate 10 (IA ou contingencia citando o assunto)
+                .andExpect(jsonPath("$.totalQuestions").value(10))
+                .andExpect(jsonPath("$.questions", hasSize(10)));
     }
 
     @Test
@@ -351,6 +352,8 @@ class QuizControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").isNotEmpty())
                 .andExpect(jsonPath("$.title").value("Simulado Geral 15"))
+                .andExpect(jsonPath("$.totalQuestions").value(15))
+                .andExpect(jsonPath("$.questions", hasSize(15)))
                 .andExpect(jsonPath("$.subjectId").value(testSubject.getId()));
     }
 }

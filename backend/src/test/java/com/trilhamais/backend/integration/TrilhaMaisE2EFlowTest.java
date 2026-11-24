@@ -103,7 +103,8 @@ public class TrilhaMaisE2EFlowTest {
         RegisterRequest registerReq = new RegisterRequest(
                 "Aluno E2E",
                 "aluno.e2e@uninassau.edu.br",
-                "senhaForte123"
+                "senhaForte123",
+                true
         );
 
         mockMvc.perform(post("/api/users/register")

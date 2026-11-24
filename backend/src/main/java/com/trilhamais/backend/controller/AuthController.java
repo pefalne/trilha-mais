@@ -7,6 +7,9 @@ import com.trilhamais.backend.dto.MessageResponse;
 import com.trilhamais.backend.dto.ResetPasswordRequest;
 import com.trilhamais.backend.service.AuthService;
 import com.trilhamais.backend.service.PasswordResetService;
+import com.trilhamais.backend.service.RecoveryKeyService;
+import com.trilhamais.backend.dto.RecoveryKeyResponse;
+import com.trilhamais.backend.dto.ResetPasswordKeyRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,10 +26,13 @@ public class AuthController {
 
     private final AuthService authService;
     private final PasswordResetService passwordResetService;
+    private final RecoveryKeyService recoveryKeyService;
 
-    public AuthController(AuthService authService, PasswordResetService passwordResetService) {
+    public AuthController(AuthService authService, PasswordResetService passwordResetService,
+                          RecoveryKeyService recoveryKeyService) {
         this.authService = authService;
         this.passwordResetService = passwordResetService;
+        this.recoveryKeyService = recoveryKeyService;
     }
 
     /**
@@ -59,5 +65,15 @@ public class AuthController {
     public ResponseEntity<MessageResponse> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
         passwordResetService.resetPassword(request);
         return ResponseEntity.ok(new MessageResponse("Senha alterada com sucesso. Faça login com a nova senha."));
+    }
+
+    /**
+     * Endpoint publico que troca a senha usando a CHAVE DE RECUPERACAO (sem e-mail).
+     * Em caso de sucesso devolve uma nova chave; a anterior deixa de valer.
+     * POST /api/auth/reset-password-key  body: { email, recoveryKey, newPassword }
+     */
+    @PostMapping("/reset-password-key")
+    public ResponseEntity<RecoveryKeyResponse> resetPasswordWithKey(@Valid @RequestBody ResetPasswordKeyRequest request) {
+        return ResponseEntity.ok(recoveryKeyService.resetPassword(request));
     }
 }

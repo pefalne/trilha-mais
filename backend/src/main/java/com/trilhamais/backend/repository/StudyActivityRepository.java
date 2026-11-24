@@ -18,4 +18,6 @@ public interface StudyActivityRepository extends JpaRepository<StudyActivity, Lo
     // Dias distintos em que o estudante estudou, do mais recente para o mais antigo
     @Query("SELECT DISTINCT a.activityDate FROM StudyActivity a WHERE a.user.id = :userId ORDER BY a.activityDate DESC")
     List<LocalDate> findDistinctActivityDatesByUserId(@Param("userId") Long userId);
+
+    List<StudyActivity> findByUserIdOrderByActivityDateAsc(Long userId);
 }

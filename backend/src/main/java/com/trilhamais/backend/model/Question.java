@@ -31,6 +31,11 @@ public class Question {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    // Origem da questao: NULL ou MANUAL = cadastrada pelo estudante; AI = gerada pela IA; FALLBACK = gerada sem IA.
+    // So as cadastradas pelo estudante sao reaproveitadas em novos simulados.
+    @Column(name = "source", length = 20)
+    private String source;
+
     public Question() {
     }
 
@@ -93,6 +98,14 @@ public class Question {
 
     public void setOptions(List<QuestionOption> options) {
         this.options = options;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
     }
 
     public LocalDateTime getCreatedAt() {

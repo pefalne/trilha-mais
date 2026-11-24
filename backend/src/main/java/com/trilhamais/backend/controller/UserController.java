@@ -7,7 +7,12 @@ import com.trilhamais.backend.dto.UpdateProfileRequest;
 import com.trilhamais.backend.dto.UserResponse;
 import com.trilhamais.backend.dto.UserSettingsDto;
 import com.trilhamais.backend.model.User;
+import com.trilhamais.backend.dto.DeleteAccountRequest;
+import com.trilhamais.backend.dto.RecoveryKeyResponse;
+import com.trilhamais.backend.service.AccountDataService;
+import com.trilhamais.backend.service.RecoveryKeyService;
 import com.trilhamais.backend.service.UserService;
+import java.util.Map;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,9 +27,14 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
+    private final RecoveryKeyService recoveryKeyService;
+    private final AccountDataService accountDataService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, RecoveryKeyService recoveryKeyService,
+                          AccountDataService accountDataService) {
         this.userService = userService;
+        this.recoveryKeyService = recoveryKeyService;
+        this.accountDataService = accountDataService;
     }
 
     /**
@@ -91,5 +101,37 @@ public class UserController {
             @AuthenticationPrincipal User user,
             @RequestBody UserSettingsDto request) {
         return ResponseEntity.ok(userService.updateSettings(user, request));
+    }
+
+    /**
+     * Gera uma nova chave de recuperacao (a anterior deixa de valer). A chave aparece so nesta resposta.
+     * POST /api/users/me/recovery-key
+     */
+    @PostMapping("/me/recovery-key")
+    public ResponseEntity<RecoveryKeyResponse> regenerateRecoveryKey(@AuthenticationPrincipal User user) {
+        return ResponseEntity.ok(recoveryKeyService.regenerate(user));
+    }
+
+    /**
+     * LGPD: exporta todos os dados do estudante em JSON.
+     * GET /api/users/me/export
+     */
+    @GetMapping("/me/export")
+    public ResponseEntity<Map<String, Object>> exportData(@AuthenticationPrincipal User user) {
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=\"trilha-mais-meus-dados.json\"")
+                .body(accountDataService.export(user));
+    }
+
+    /**
+     * LGPD: apaga a conta e todos os dados do estudante (exige a senha).
+     * DELETE /api/users/me  body: { "password": "..." }
+     */
+    @DeleteMapping("/me")
+    public ResponseEntity<Void> deleteAccount(
+            @AuthenticationPrincipal User user,
+            @Valid @RequestBody DeleteAccountRequest request) {
+        accountDataService.deleteAccount(user, request.getPassword());
+        return ResponseEntity.noContent().build();
     }
 }

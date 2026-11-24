@@ -1,5 +1,7 @@
 package com.trilhamais.backend.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 /**
  * DTO que representa o perfil do usuario com métricas de estudo para a tela de Perfil.
  * Nunca expoe senhas ou hashes para o cliente/aplicativo.
@@ -13,6 +15,10 @@ public class UserResponse {
     private int evaluationsCount;
     private int subjectsCount;
     private String avatarEmoji;
+
+    // Chave de recuperacao em texto: so vem preenchida na resposta do cadastro (mostrada uma unica vez)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String recoveryKey;
 
     public UserResponse() {
     }
@@ -91,5 +97,13 @@ public class UserResponse {
 
     public void setAvatarEmoji(String avatarEmoji) {
         this.avatarEmoji = avatarEmoji;
+    }
+
+    public String getRecoveryKey() {
+        return recoveryKey;
+    }
+
+    public void setRecoveryKey(String recoveryKey) {
+        this.recoveryKey = recoveryKey;
     }
 }
