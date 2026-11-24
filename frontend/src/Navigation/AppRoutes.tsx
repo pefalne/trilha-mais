@@ -21,6 +21,7 @@ import useDesktop from '../utils/useDesktop';
 import MenuLateral from '../components/desktop/MenuLateral';
 import PainelMarca from '../components/desktop/PainelMarca';
 
+import { voltar } from '../utils/voltar';
 // Telas de entrada (sem menu); no computador elas ficam ao lado do painel da marca
 const ROTAS_ENTRADA = ['Login', 'Cadastro', 'RecuperacaoSenha'];
 // Telas que dependem de dados passados pela tela anterior: se a página for
@@ -183,13 +184,13 @@ export default function AppRoutes() {
 
         {/* Rotas de Chat com IA: suporta ChatIAScreen, ChatIA e Chat para evitar erros de navegação */}
         <Stack.Screen name="ChatIAScreen">
-          {({ navigation }) => <ChatIAScreen onBack={() => navigation.goBack()} />}
+          {({ navigation }) => <ChatIAScreen onBack={() => voltar(navigation)} />}
         </Stack.Screen>
         <Stack.Screen name="ChatIA">
-          {({ navigation }) => <ChatIAScreen onBack={() => navigation.goBack()} />}
+          {({ navigation }) => <ChatIAScreen onBack={() => voltar(navigation)} />}
         </Stack.Screen>
         <Stack.Screen name="Chat">
-          {({ navigation }) => <ChatIAScreen onBack={() => navigation.goBack()} />}
+          {({ navigation }) => <ChatIAScreen onBack={() => voltar(navigation)} />}
         </Stack.Screen>
 
         {/* Tela de Quiz interativo */}
@@ -201,7 +202,7 @@ export default function AppRoutes() {
                 topicId={p.topicId}
                 subjectId={p.subjectId}
                 questionCount={p.totalQuestoes}
-                onClose={() => navigation.goBack()}
+                onClose={() => voltar(navigation)}
                 onFinish={(resultado) =>
                   navigation.replace('Resultado', { resultado, quizParams: p })
                 }

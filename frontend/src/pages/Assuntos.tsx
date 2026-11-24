@@ -14,6 +14,8 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { aiApi, topicsApi, TopicStatus } from '../services/api';
 import { avisar } from '../utils/alerta';
 
+import { voltar } from '../utils/voltar';
+import TextoFormatado from '../components/TextoFormatado';
 export default function Assuntos() {
   const navigation = useNavigation<any>();
   const route = useRoute<any>();
@@ -108,7 +110,7 @@ export default function Assuntos() {
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.botaoVoltar}
-          onPress={() => navigation.goBack()}
+          onPress={() => voltar(navigation)}
         >
           <Text style={styles.iconeVoltar}>‹</Text>
         </TouchableOpacity>
@@ -167,7 +169,7 @@ export default function Assuntos() {
           {!carregando && !erro ? (
             <>
               <Text style={styles.subtituloSecao}>{assuntoTitulo}</Text>
-              <Text style={styles.paragrafo}>{explicacao}</Text>
+              <TextoFormatado texto={explicacao} estilo={styles.paragrafo} />
             </>
           ) : null}
 

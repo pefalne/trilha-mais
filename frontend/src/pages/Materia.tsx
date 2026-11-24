@@ -16,6 +16,7 @@ import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/nativ
 import { topicsApi, paraAssuntoTela, ApiError } from '../services/api';
 import { avisar, confirmar } from '../utils/alerta';
 
+import { voltar } from '../utils/voltar';
 // Tipagens para o nosso mock de dados recebido por parâmetro
 export interface Assunto {
   id: string;
@@ -143,7 +144,7 @@ export default function Materia() {
 
         {/* Topo do header: Voltar e Título */}
         <View style={styles.topoHeader}>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <TouchableOpacity onPress={() => voltar(navigation)} style={styles.backButton}>
             <View style={styles.iconeFundo}>
               <Text style={styles.iconeTexto}>{materia.icone}</Text>
             </View>

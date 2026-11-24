@@ -19,6 +19,7 @@ import {
 } from 'react-native';
 import BarraNavegacao, { ChaveAba } from '../components/BarraNavegacao';
 
+import { voltar } from '../utils/voltar';
 const opcoesAvatar = ['🎓', '📚', '🚀', '🧠', '⭐', '🦉', '💡', '🔥'];
 
 // Equipe do projeto (só nome e função; sem matrícula ou outro dado pessoal)
@@ -189,7 +190,7 @@ export default function Perfil() {
           {/* Botão de Voltar */}
           <TouchableOpacity
             style={styles.backButton}
-            onPress={() => navigation.goBack()}
+            onPress={() => voltar(navigation)}
             activeOpacity={0.7}
           >
             <Text style={styles.backButtonText}>‹</Text>

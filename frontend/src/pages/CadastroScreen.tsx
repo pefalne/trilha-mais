@@ -16,6 +16,7 @@ import { useNavigation } from '@react-navigation/native';
 import { authApi } from '../services/api';
 import ChaveRecuperacao, { abrirPaginaDoSite } from '../components/ChaveRecuperacao';
 
+import { voltar } from '../utils/voltar';
 export default function CadastroScreen() {
   const navigation = useNavigation<any>();
   
@@ -101,7 +102,7 @@ export default function CadastroScreen() {
           {/* Cabeçalho */}
           <View style={styles.header}>
             {/* Ícone de voltar simulado (pode usar react-native-vector-icons) */}
-            <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+            <TouchableOpacity onPress={() => voltar(navigation, 'Login')} style={styles.backButton}>
               <Text style={styles.backButtonText}>{'<'}</Text>
             </TouchableOpacity>
             
