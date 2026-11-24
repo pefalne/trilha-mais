@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { authApi } from '../services/api';
+import ChaveRecuperacao, { abrirPaginaDoSite } from '../components/ChaveRecuperacao';
 
 export default function CadastroScreen() {
   const navigation = useNavigation<any>();
@@ -25,6 +26,10 @@ export default function CadastroScreen() {
 
   const [erro, setErro] = useState<string>('');
   const [carregando, setCarregando] = useState<boolean>(false);
+  const [aceite, setAceite] = useState<boolean>(false);
+  const [chave, setChave] = useState<string | null>(null);
+
+  const irParaInicio = () => navigation.reset({ index: 0, routes: [{ name: 'Home' }] });
 
   const handleCadastro = async () => {
     if (carregando) return;
@@ -48,19 +53,40 @@ export default function CadastroScreen() {
       setErro('As senhas não conferem.');
       return;
     }
+    if (!aceite) {
+      setErro('Para criar a conta, aceite os Termos de Uso e a Política de Privacidade.');
+      return;
+    }
 
     try {
       setCarregando(true);
       setErro('');
       // Cria a conta e já entra com ela
-      await authApi.register(nomeLimpo, emailLimpo, senha);
-      navigation.reset({ index: 0, routes: [{ name: 'Home' }] });
+      const { recoveryKey } = await authApi.register(nomeLimpo, emailLimpo, senha);
+      if (recoveryKey) setChave(recoveryKey);
+      else irParaInicio();
     } catch (e: any) {
       setErro(e?.message ?? 'Não foi possível criar a conta.');
     } finally {
       setCarregando(false);
     }
   };
+
+  if (chave) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', padding: 20, backgroundColor: '#F1F4FA' }}>
+          <ChaveRecuperacao
+            chave={chave}
+            email={email.trim().toLowerCase()}
+            titulo="Conta criada! Guarde sua chave"
+            textoBotao="Começar a estudar"
+            onConcluir={irParaInicio}
+          />
+        </ScrollView>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -136,6 +162,25 @@ export default function CadastroScreen() {
               />
             </View>
 
+            <TouchableOpacity
+              style={styles.aceiteLinha}
+              onPress={() => setAceite((v) => !v)}
+              activeOpacity={0.8}
+              accessibilityRole="checkbox"
+              accessibilityState={{ checked: aceite }}
+            >
+              <View style={[styles.check, aceite && styles.checkOn]}>
+                {aceite ? <Text style={styles.checkV}>✓</Text> : null}
+              </View>
+              <Text style={styles.aceiteTexto}>
+                Li e aceito os{' '}
+                <Text style={styles.linkText} onPress={() => abrirPaginaDoSite('/termos')}>Termos de Uso</Text>
+                {' '}e a{' '}
+                <Text style={styles.linkText} onPress={() => abrirPaginaDoSite('/privacidade')}>Política de Privacidade</Text>
+                . Tenho 18 anos ou mais, ou tenho autorização do meu responsável legal.
+              </Text>
+            </TouchableOpacity>
+
             {erro ? <Text style={styles.erroTexto}>{erro}</Text> : null}
 
             <TouchableOpacity
@@ -152,8 +197,8 @@ export default function CadastroScreen() {
             </TouchableOpacity>
 
             <Text style={styles.termsText}>
-              Ao criar uma conta, você concorda com nossos{'\n'}
-              <Text style={styles.linkText}>Termos de Uso</Text>
+              Já tem conta?{' '}
+              <Text style={styles.linkText} onPress={() => navigation.navigate('Login')}>Entrar</Text>
             </Text>
             
           </View>
@@ -164,6 +209,11 @@ export default function CadastroScreen() {
 }
 
 const styles = StyleSheet.create({
+  aceiteLinha: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 16 },
+  check: { width: 22, height: 22, borderRadius: 6, borderWidth: 2, borderColor: '#94A3B8', alignItems: 'center', justifyContent: 'center', marginRight: 10, marginTop: 1 },
+  checkOn: { backgroundColor: '#2563EB', borderColor: '#2563EB' },
+  checkV: { color: '#FFFFFF', fontWeight: '900', fontSize: 14 },
+  aceiteTexto: { flex: 1, fontSize: 13, color: '#4A5568', lineHeight: 19 },
   erroTexto: {
     color: '#DC2626',
     fontSize: 13,

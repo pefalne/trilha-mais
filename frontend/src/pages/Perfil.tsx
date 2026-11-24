@@ -2,6 +2,7 @@ import React, { useCallback, useState } from 'react';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { usersApi, authApi, UserResponse } from '../services/api';
 import { avisar, confirmar } from '../utils/alerta';
+import ChaveRecuperacao, { abrirPaginaDoSite, baixarArquivo } from '../components/ChaveRecuperacao';
 
 import {
   View,
@@ -43,6 +44,58 @@ export default function Perfil() {
         .catch(() => {});
     }, [])
   );
+
+  // Chave de recuperação, LGPD (baixar dados / excluir conta)
+  const [chaveNova, setChaveNova] = useState<string | null>(null);
+  const [excluirVisivel, setExcluirVisivel] = useState(false);
+  const [senhaExcluir, setSenhaExcluir] = useState('');
+  const [erroExcluir, setErroExcluir] = useState('');
+  const [processando, setProcessando] = useState(false);
+
+  const gerarChave = async () => {
+    const ok = await confirmar(
+      'Chave de recuperação',
+      'Vamos gerar uma chave nova. A chave anterior deixa de funcionar. Continuar?',
+      'Gerar chave',
+    );
+    if (!ok) return;
+    try {
+      const r = await usersApi.novaChaveRecuperacao();
+      setChaveNova(r.recoveryKey);
+    } catch (e: any) {
+      avisar('Não foi possível gerar a chave', e?.message);
+    }
+  };
+
+  const baixarDados = async () => {
+    try {
+      const dados = await usersApi.exportarDados();
+      const ok = baixarArquivo('trilha-mais-meus-dados.json', JSON.stringify(dados, null, 2), 'application/json');
+      if (!ok) avisar('Meus dados', 'Abra o Trilha+ no navegador para baixar o arquivo com seus dados.');
+    } catch (e: any) {
+      avisar('Não foi possível baixar seus dados', e?.message);
+    }
+  };
+
+  const excluirConta = async () => {
+    if (!senhaExcluir) {
+      setErroExcluir('Digite sua senha para confirmar.');
+      return;
+    }
+    try {
+      setProcessando(true);
+      setErroExcluir('');
+      await usersApi.excluirConta(senhaExcluir);
+      await authApi.logout();
+      setExcluirVisivel(false);
+      avisar('Conta excluída', 'Sua conta e todos os seus dados foram apagados.');
+      navigation.reset({ index: 0, routes: [{ name: 'Login' }] });
+    } catch (e: any) {
+      setErroExcluir(e?.message ?? 'Não foi possível excluir a conta.');
+    } finally {
+      setProcessando(false);
+    }
+  };
 
   const sair = async () => {
     const confirmado = await confirmar('Sair', 'Deseja sair da sua conta?', 'Sair');
@@ -196,6 +249,40 @@ export default function Perfil() {
             <Text style={styles.chevron}>›</Text>
           </TouchableOpacity>
 
+          <TouchableOpacity style={styles.menuItem} activeOpacity={0.7} onPress={gerarChave}>
+            <Text style={styles.menuIcon}>🔑</Text>
+            <Text style={styles.menuText}>Chave de recuperação</Text>
+            <Text style={styles.chevron}>›</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.menuItem} activeOpacity={0.7} onPress={baixarDados}>
+            <Text style={styles.menuIcon}>📥</Text>
+            <Text style={styles.menuText}>Baixar meus dados</Text>
+            <Text style={styles.chevron}>›</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.menuItem} activeOpacity={0.7} onPress={() => abrirPaginaDoSite('/termos')}>
+            <Text style={styles.menuIcon}>📄</Text>
+            <Text style={styles.menuText}>Termos de Uso</Text>
+            <Text style={styles.chevron}>›</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.menuItem} activeOpacity={0.7} onPress={() => abrirPaginaDoSite('/privacidade')}>
+            <Text style={styles.menuIcon}>🔒</Text>
+            <Text style={styles.menuText}>Política de Privacidade</Text>
+            <Text style={styles.chevron}>›</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.menuItem}
+            activeOpacity={0.7}
+            onPress={() => { setSenhaExcluir(''); setErroExcluir(''); setExcluirVisivel(true); }}
+          >
+            <Text style={styles.menuIcon}>🗑️</Text>
+            <Text style={[styles.menuText, styles.textDestructive]}>Excluir minha conta</Text>
+            <Text style={styles.chevron}>›</Text>
+          </TouchableOpacity>
+
           <TouchableOpacity 
             style={styles.menuItem} 
             activeOpacity={0.7}
@@ -289,6 +376,56 @@ export default function Perfil() {
                 disabled={salvando}
               >
                 <Text style={styles.textoSalvar}>{salvando ? 'Salvando...' : 'Salvar'}</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
+
+      <Modal visible={Boolean(chaveNova)} transparent animationType="fade" onRequestClose={() => setChaveNova(null)}>
+        <View style={styles.fundoModal}>
+          <View style={{ width: '100%', maxWidth: 440, alignSelf: 'center' }}>
+            {chaveNova ? (
+              <ChaveRecuperacao
+                chave={chaveNova}
+                email={usuario?.email}
+                titulo="Sua nova chave de recuperação"
+                textoBotao="Pronto"
+                onConcluir={() => setChaveNova(null)}
+              />
+            ) : null}
+          </View>
+        </View>
+      </Modal>
+
+      <Modal visible={excluirVisivel} transparent animationType="fade" onRequestClose={() => setExcluirVisivel(false)}>
+        <KeyboardAvoidingView style={styles.fundoModal} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+          <View style={styles.conteudoModal}>
+            <Text style={styles.tituloModal}>Excluir minha conta</Text>
+            <Text style={{ color: '#4A5568', fontSize: 14, lineHeight: 20, marginBottom: 14 }}>
+              Isso apaga para sempre sua conta, matérias, agenda, simulados, desempenho e conversas com a IA.
+              Se quiser, baixe seus dados antes. Para confirmar, digite sua senha.
+            </Text>
+            <TextInput
+              style={styles.campo}
+              value={senhaExcluir}
+              onChangeText={(t) => { setSenhaExcluir(t); setErroExcluir(''); }}
+              placeholder="Sua senha"
+              placeholderTextColor="#9CA3AF"
+              secureTextEntry
+              accessibilityLabel="Senha para confirmar a exclusão"
+            />
+            {erroExcluir ? <Text style={styles.textoErro}>{erroExcluir}</Text> : null}
+            <View style={styles.acoesModal}>
+              <TouchableOpacity style={styles.botaoCancelar} onPress={() => setExcluirVisivel(false)}>
+                <Text style={styles.textoCancelar}>Cancelar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.botaoSalvar, { backgroundColor: '#DC2626' }, processando && { opacity: 0.7 }]}
+                onPress={excluirConta}
+                disabled={processando}
+              >
+                <Text style={styles.textoSalvar}>{processando ? 'Excluindo...' : 'Excluir'}</Text>
               </TouchableOpacity>
             </View>
           </View>

@@ -8,51 +8,38 @@ import {
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
+  ScrollView,
   ActivityIndicator,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { authApi } from '../services/api';
-import { avisar } from '../utils/alerta';
+import ChaveRecuperacao from '../components/ChaveRecuperacao';
 
-type Etapa = 'email' | 'codigo';
-
+// Troca de senha sem e-mail: a pessoa informa o e-mail, a chave de recuperação
+// (recebida no cadastro ou gerada no Perfil) e a senha nova. O servidor devolve
+// uma chave nova, que substitui a antiga.
 export default function RecuperacaoSenha() {
   const navigation = useNavigation<any>();
-  const [etapa, setEtapa] = useState<Etapa>('email');
   const [email, setEmail] = useState<string>('');
-  const [codigo, setCodigo] = useState<string>('');
+  const [chave, setChave] = useState<string>('');
   const [novaSenha, setNovaSenha] = useState<string>('');
   const [confirmarSenha, setConfirmarSenha] = useState<string>('');
   const [erro, setErro] = useState<string>('');
   const [carregando, setCarregando] = useState<boolean>(false);
+  const [chaveNova, setChaveNova] = useState<string | null>(null);
 
   const emailLimpo = email.trim().toLowerCase();
 
-  // Etapa 1: pede o código de 6 dígitos para o e-mail informado
-  const handleRecuperacao = async () => {
+  const irParaLogin = () => navigation.reset({ index: 0, routes: [{ name: 'Login' }] });
+
+  const handleNovaSenha = async () => {
     if (carregando) return;
     if (!/^\S+@\S+\.\S+$/.test(emailLimpo)) {
       setErro('Digite um e-mail válido.');
       return;
     }
-
-    try {
-      setCarregando(true);
-      setErro('');
-      await authApi.forgotPassword(emailLimpo);
-      setEtapa('codigo');
-    } catch (e: any) {
-      setErro(e?.message ?? 'Não foi possível enviar o código.');
-    } finally {
-      setCarregando(false);
-    }
-  };
-
-  // Etapa 2: confirma o código e grava a nova senha
-  const handleNovaSenha = async () => {
-    if (carregando) return;
-    if (!codigo.trim()) {
-      setErro('Digite o código recebido.');
+    if (chave.replace(/[\s-]/g, '').length < 8) {
+      setErro('Digite a chave de recuperação (ex.: TRLH-ABCD-EFGH-JKLM).');
       return;
     }
     if (novaSenha.length < 6) {
@@ -67,9 +54,9 @@ export default function RecuperacaoSenha() {
     try {
       setCarregando(true);
       setErro('');
-      await authApi.resetPassword(emailLimpo, codigo.trim(), novaSenha);
-      avisar('Senha alterada', 'Entre com a sua nova senha.');
-      navigation.navigate('Login');
+      const res = await authApi.resetPasswordWithKey(emailLimpo, chave.trim().toUpperCase(), novaSenha);
+      if (res?.recoveryKey) setChaveNova(res.recoveryKey);
+      else irParaLogin();
     } catch (e: any) {
       setErro(e?.message ?? 'Não foi possível alterar a senha.');
     } finally {
@@ -77,39 +64,42 @@ export default function RecuperacaoSenha() {
     }
   };
 
-  const voltar = () => {
-    if (etapa === 'codigo') {
-      setEtapa('email');
-      setErro('');
-      return;
-    }
-    navigation.goBack();
-  };
+  if (chaveNova) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', padding: 20 }}>
+          <ChaveRecuperacao
+            chave={chaveNova}
+            email={emailLimpo}
+            titulo="Senha alterada! Guarde a chave nova"
+            textoBotao="Entrar com a nova senha"
+            onConcluir={irParaLogin}
+          />
+        </ScrollView>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={styles.container}
       >
-        <View style={styles.header}>
-          <TouchableOpacity onPress={voltar} style={styles.backButton}>
-            <Text style={styles.backButtonText}>{'<'}</Text>
-          </TouchableOpacity>
-        </View>
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
+          <View style={styles.header}>
+            <TouchableOpacity onPress={() => (navigation.canGoBack() ? navigation.goBack() : irParaLogin())} style={styles.backButton}>
+              <Text style={styles.backButtonText}>{'<'}</Text>
+            </TouchableOpacity>
+          </View>
 
-        <View style={styles.content}>
-          <Text style={styles.title}>
-            {etapa === 'email' ? 'Recuperar senha' : 'Criar nova senha'}
-          </Text>
-          <Text style={styles.subtitle}>
-            {etapa === 'email'
-              ? 'Digite o e-mail cadastrado. Enviaremos um código para você criar uma nova senha.'
-              : `Se ${emailLimpo} estiver cadastrado, o código de 6 dígitos foi enviado. Digite o código e a nova senha.`}
-          </Text>
+          <View style={styles.content}>
+            <Text style={styles.title}>Criar nova senha</Text>
+            <Text style={styles.subtitle}>
+              Digite seu e-mail e a chave de recuperação que apareceu quando você criou a conta.
+            </Text>
 
-          <View style={styles.form}>
-            {etapa === 'email' ? (
+            <View style={styles.form}>
               <TextInput
                 style={styles.input}
                 placeholder="E-mail"
@@ -118,82 +108,66 @@ export default function RecuperacaoSenha() {
                 autoCapitalize="none"
                 autoCorrect={false}
                 value={email}
-                onChangeText={(texto) => {
-                  setEmail(texto);
-                  setErro('');
-                }}
-                onSubmitEditing={handleRecuperacao}
+                onChangeText={setEmail}
               />
-            ) : (
-              <>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Código de 6 dígitos"
-                  placeholderTextColor="#888"
-                  keyboardType="number-pad"
-                  maxLength={6}
-                  value={codigo}
-                  onChangeText={(texto) => {
-                    setCodigo(texto.replace(/\D/g, ''));
-                    setErro('');
-                  }}
-                />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Nova senha"
-                  placeholderTextColor="#888"
-                  secureTextEntry
-                  value={novaSenha}
-                  onChangeText={(texto) => {
-                    setNovaSenha(texto);
-                    setErro('');
-                  }}
-                />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Confirmar nova senha"
-                  placeholderTextColor="#888"
-                  secureTextEntry
-                  value={confirmarSenha}
-                  onChangeText={(texto) => {
-                    setConfirmarSenha(texto);
-                    setErro('');
-                  }}
-                  onSubmitEditing={handleNovaSenha}
-                />
-              </>
-            )}
+              <TextInput
+                style={[styles.input, styles.inputChave]}
+                placeholder="Chave: TRLH-XXXX-XXXX-XXXX"
+                placeholderTextColor="#888"
+                autoCapitalize="characters"
+                autoCorrect={false}
+                value={chave}
+                onChangeText={setChave}
+              />
+              <TextInput
+                style={styles.input}
+                placeholder="Nova senha (mín. 6 caracteres)"
+                placeholderTextColor="#888"
+                secureTextEntry
+                value={novaSenha}
+                onChangeText={setNovaSenha}
+              />
+              <TextInput
+                style={styles.input}
+                placeholder="Confirmar nova senha"
+                placeholderTextColor="#888"
+                secureTextEntry
+                value={confirmarSenha}
+                onChangeText={setConfirmarSenha}
+                onSubmitEditing={handleNovaSenha}
+              />
 
-            {erro ? <Text style={styles.erroTexto}>{erro}</Text> : null}
+              {erro ? <Text style={styles.erroTexto}>{erro}</Text> : null}
 
-            <TouchableOpacity
-              style={[styles.button, carregando && { opacity: 0.7 }]}
-              onPress={etapa === 'email' ? handleRecuperacao : handleNovaSenha}
-              activeOpacity={0.8}
-              disabled={carregando}
-            >
-              {carregando ? (
-                <ActivityIndicator color="#FFFFFF" />
-              ) : (
-                <Text style={styles.buttonText}>
-                  {etapa === 'email' ? 'Enviar código' : 'Salvar nova senha'}
-                </Text>
-              )}
-            </TouchableOpacity>
-
-            {etapa === 'codigo' ? (
-              <TouchableOpacity onPress={handleRecuperacao} style={styles.reenviar} disabled={carregando}>
-                <Text style={styles.reenviarTexto}>Reenviar código</Text>
+              <TouchableOpacity
+                style={[styles.button, carregando && { opacity: 0.7 }]}
+                onPress={handleNovaSenha}
+                activeOpacity={0.8}
+                disabled={carregando}
+              >
+                {carregando ? <ActivityIndicator color="#FFFFFF" /> : <Text style={styles.buttonText}>Salvar nova senha</Text>}
               </TouchableOpacity>
-            ) : null}
+
+              <View style={styles.ajuda}>
+                <Text style={styles.ajudaTitulo}>Não tem a chave?</Text>
+                <Text style={styles.ajudaTexto}>
+                  Se você ainda está conectado em algum aparelho, abra Perfil → Chave de recuperação e gere
+                  uma nova. Por segurança, sem a chave ou a senha atual não dá para trocar a senha.
+                </Text>
+              </View>
+            </View>
           </View>
-        </View>
+        </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  inputChave: { letterSpacing: 1, fontWeight: '700' },
+  ajuda: { marginTop: 20, backgroundColor: '#EEF2FF', borderRadius: 12, padding: 14 },
+  ajudaTitulo: { fontWeight: '700', color: '#2D3748', marginBottom: 4 },
+  ajudaTexto: { color: '#4A5568', fontSize: 13, lineHeight: 19 },
   erroTexto: {
     color: '#DC2626',
     fontSize: 13,
@@ -236,7 +210,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 24,
     justifyContent: 'center',
-    paddingBottom: 100,
+    paddingBottom: 40,
   },
   title: {
     fontSize: 32,

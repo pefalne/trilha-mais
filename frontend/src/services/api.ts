@@ -7,6 +7,7 @@ declare const process: { env: Record<string, string | undefined> };
 const API_PUBLICADA = 'https://trilha-mais-backend.onrender.com';
 const BASE_URL = (process.env.EXPO_PUBLIC_API_URL || API_PUBLICADA).replace(/\/+$/, '');
 const TOKEN_KEY = '@trilhamais:token';
+export const VERSAO_TERMOS = '2026-11-24';
 
 export const tokenStorage = {
   get: () => AsyncStorage.getItem(TOKEN_KEY),
@@ -113,14 +114,24 @@ export const authApi = {
     await tokenStorage.set(res.accessToken);
     return res.user;
   },
+  // Cria a conta (com o aceite dos Termos/Política), entra e devolve a chave de
+  // recuperação, que o servidor mostra uma única vez.
   async register(name: string, email: string, password: string) {
-    await request<UserResponse>('/api/users/register', {
+    const criado = await request<UserResponse & { recoveryKey?: string }>('/api/users/register', {
       method: 'POST',
-      body: { name, email, password },
+      body: { name, email, password, acceptedTerms: true, termsVersion: VERSAO_TERMOS },
       auth: false,
     });
-    return authApi.login(email, password);
+    const user = await authApi.login(email, password);
+    return { user, recoveryKey: criado?.recoveryKey ?? null };
   },
+  // Troca de senha sem e-mail: e-mail + chave de recuperação. Devolve a chave nova.
+  resetPasswordWithKey: (email: string, recoveryKey: string, newPassword: string) =>
+    request<{ message: string; recoveryKey?: string }>('/api/auth/reset-password-key', {
+      method: 'POST',
+      body: { email, recoveryKey, newPassword },
+      auth: false,
+    }),
   logout: () => tokenStorage.clear(),
   temSessao: async () => Boolean(await tokenStorage.get()),
   forgotPassword: (email: string) =>
@@ -247,6 +258,13 @@ export const usersApi = {
   settings: () => request<UserSettings>('/api/users/me/settings'),
   updateSettings: (data: Partial<UserSettings>) =>
     request<UserSettings>('/api/users/me/settings', { method: 'PUT', body: data }),
+  // Gera uma chave de recuperação nova (a anterior deixa de valer)
+  novaChaveRecuperacao: () =>
+    request<{ recoveryKey: string }>('/api/users/me/recovery-key', { method: 'POST' }),
+  // LGPD: portabilidade (baixar os dados) e eliminação (excluir a conta)
+  exportarDados: () => request<Record<string, unknown>>('/api/users/me/export'),
+  excluirConta: (password: string) =>
+    request<void>('/api/users/me', { method: 'DELETE', body: { password } }),
 };
 
 export type UserSettings = {
