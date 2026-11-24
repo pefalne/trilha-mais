@@ -75,6 +75,7 @@ class UserControllerTest {
     void shouldRegisterUserSuccessfully() throws Exception {
         String json = """
             {
+              "acceptedTerms": true,
               "name": "Pedro",
               "email": "pedro@email.com",
               "password": "12345678"
@@ -88,7 +89,9 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.id", notNullValue()))
                 .andExpect(jsonPath("$.name", is("Pedro")))
                 .andExpect(jsonPath("$.email", is("pedro@email.com")))
-                .andExpect(jsonPath("$.password").doesNotExist()); // Senha nunca deve ser exposta
+                .andExpect(jsonPath("$.password").doesNotExist()) // Senha nunca deve ser exposta
+                .andExpect(jsonPath("$.recoveryKey", org.hamcrest.Matchers.matchesPattern(
+                        "TRLH-[A-HJ-NP-Z2-9]{4}-[A-HJ-NP-Z2-9]{4}-[A-HJ-NP-Z2-9]{4}")));
 
         // Verifica no banco de dados MySQL
         Optional<User> savedUser = userRepository.findByEmail("pedro@email.com");
@@ -106,6 +109,7 @@ class UserControllerTest {
         // Primeiro cadastro
         String firstUserJson = """
             {
+              "acceptedTerms": true,
               "name": "Pedro",
               "email": "pedro@email.com",
               "password": "12345678"
@@ -120,6 +124,7 @@ class UserControllerTest {
         // Tentativa de duplicacao
         String duplicateUserJson = """
             {
+              "acceptedTerms": true,
               "name": "Pedro Outro",
               "email": "pedro@email.com",
               "password": "outrasenha123"
@@ -141,6 +146,7 @@ class UserControllerTest {
     void shouldReturnBadRequestWhenEmailIsInvalid() throws Exception {
         String invalidEmailJson = """
             {
+              "acceptedTerms": true,
               "name": "Pedro",
               "email": "email-invalido",
               "password": "12345678"
@@ -162,6 +168,7 @@ class UserControllerTest {
     void shouldReturnBadRequestWhenFieldsAreBlank() throws Exception {
         String blankFieldsJson = """
             {
+              "acceptedTerms": true,
               "name": "",
               "email": "",
               "password": ""
@@ -186,6 +193,7 @@ class UserControllerTest {
         String plainPassword = "MinhaSenhaSuperSecreta123";
         String userJson = """
             {
+              "acceptedTerms": true,
               "name": "Carlos",
               "email": "carlos@email.com",
               "password": "%s"

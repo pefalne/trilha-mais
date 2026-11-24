@@ -208,7 +208,9 @@ Comparação entre as telas do front-end e o que a API entrega (atualizado em 23
 
 | Tela | O que foi feito no back-end |
 | :--- | :--- |
-| Recuperar senha | `POST /api/auth/forgot-password` envia código de 6 dígitos (vale 30 min, até 5 tentativas, só o hash fica no banco) e `POST /api/auth/reset-password` troca a senha. Sem servidor de e-mail configurado, o código aparece no log do back-end. |
+| Recuperar senha | **Chave de recuperação** (24/11/2026): o app roda sem servidor de e-mail, então o cadastro devolve uma chave `TRLH-XXXX-XXXX-XXXX` (mostrada uma vez; no banco fica só o hash BCrypt). `POST /api/auth/reset-password-key` troca a senha com e-mail + chave e devolve uma nova chave; 5 erros por e-mail em 15 min bloqueiam (429). `POST /api/users/me/recovery-key` gera outra chave. O código por e-mail (`forgot-password`/`reset-password`) continua no back-end, mas só funciona com servidor de e-mail. |
+| LGPD / ECA | Cadastro exige `acceptedTerms: true` (guarda data e versão dos termos). `GET /api/users/me/export` baixa todos os dados em JSON e `DELETE /api/users/me` (com a senha) apaga a conta e tudo ligado a ela. |
+| Simulado | `POST /api/quizzes/generate` agora devolve a quantidade pedida: usa primeiro as questões cadastradas pelo estudante e completa com questões geradas pela IA (Groq) sobre a matéria/assunto. Se a IA falhar, completa com questões de revisão que citam o assunto. |
 | Home / Perfil / Progresso (🔥) | A sequência de dias agora é calculada de verdade (tabela `study_activities`). Conta quando o estudante finaliza um simulado, começa/conclui um assunto, conclui um compromisso da agenda ou usa o chat. |
 | Progresso | `GET /api/performance/overview`: média geral, avaliações, assuntos estudados, sequência, aproveitamento por matéria, melhor matéria e "precisa revisar". |
 | Perfil | Editar nome/avatar (`PUT /api/users/me`), trocar senha (`PUT /api/users/me/password`) e Notificações/Tema (`/api/users/me/settings`). |
@@ -223,7 +225,7 @@ Comparação entre as telas do front-end e o que a API entrega (atualizado em 23
 - Trocar os mocks das telas pelos endpoints da tabela abaixo.
 - O chat chama a Groq direto do app, com a chave no front. O certo é usar `POST /api/ai/chat`, para a chave ficar só no servidor.
 - O quiz usa questões fixas na tela; deve usar `POST /api/quizzes/generate` com o `topicId` e a quantidade escolhida (10 ou 15).
-- A tela de recuperar senha precisa de um campo para o código de 6 dígitos e a nova senha.
+- A tela de recuperar senha usa e-mail + chave de recuperação (`POST /api/auth/reset-password-key`); o cadastro precisa mostrar a `recoveryKey` e enviar `acceptedTerms: true`.
 
 A modelagem de todas as tabelas está no [`MODELAGEM.md`](./MODELAGEM.md).
 
@@ -239,10 +241,14 @@ A modelagem de todas as tabelas está no [`MODELAGEM.md`](./MODELAGEM.md).
 | | `PUT` | `/api/schedules/{id}` | Sim | Edita compromisso (título, data, horário, matéria/assunto) |
 | | `PATCH`| `/api/schedules/{id}/toggle` | Sim | Alterna status de conclusão do compromisso |
 | | `DELETE`| `/api/schedules/{id}` | Sim | Remove compromisso de estudo |
-| **Autenticação** | `POST` | `/api/users/register` | Não | Cadastra um novo estudante |
+| **Autenticação** | `POST` | `/api/users/register` | Não | Cadastra um novo estudante (exige `acceptedTerms: true`; devolve `recoveryKey` uma vez) |
 | | `POST` | `/api/auth/login` | Não | Autentica e gera token JWT Bearer |
-| | `POST` | `/api/auth/forgot-password` | Não | Envia código de 6 dígitos por e-mail para recuperar a senha |
-| | `POST` | `/api/auth/reset-password` | Não | Troca a senha usando o código recebido |
+| | `POST` | `/api/auth/reset-password-key` | Não | Troca a senha com e-mail + chave de recuperação e devolve nova chave |
+| | `POST` | `/api/auth/forgot-password` | Não | (Legado) Código de 6 dígitos por e-mail; precisa de servidor de e-mail |
+| | `POST` | `/api/auth/reset-password` | Não | (Legado) Troca a senha usando o código do e-mail |
+| | `POST` | `/api/users/me/recovery-key` | Sim | Gera nova chave de recuperação (a anterior deixa de valer) |
+| | `GET` | `/api/users/me/export` | Sim | LGPD: exporta todos os dados do estudante em JSON |
+| | `DELETE` | `/api/users/me` | Sim | LGPD: apaga a conta e todos os dados (exige a senha) |
 | | `GET` | `/api/users/profile` | Sim | Consulta perfil autenticado |
 | | `GET` | `/api/users/me` | Sim | Perfil completo com métricas de desempenho |
 | | `PUT` | `/api/users/me` | Sim | Edita nome e avatar |

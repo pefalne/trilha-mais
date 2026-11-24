@@ -5,7 +5,9 @@ import com.trilhamais.backend.exception.ResourceNotFoundException;
 import com.trilhamais.backend.model.*;
 import com.trilhamais.backend.repository.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -23,6 +25,8 @@ public class QuizService {
     private final SubjectRepository subjectRepository;
     private final QuestionService questionService;
     private final StudyActivityService studyActivityService;
+    private final GroqAiService groqAiService;
+    private final TransactionTemplate transactionTemplate;
 
     public QuizService(QuizRepository quizRepository,
                        QuizQuestionRepository quizQuestionRepository,
@@ -32,7 +36,9 @@ public class QuizService {
                        TopicRepository topicRepository,
                        SubjectRepository subjectRepository,
                        QuestionService questionService,
-                       StudyActivityService studyActivityService) {
+                       StudyActivityService studyActivityService,
+                       GroqAiService groqAiService,
+                       PlatformTransactionManager transactionManager) {
         this.quizRepository = quizRepository;
         this.quizQuestionRepository = quizQuestionRepository;
         this.quizAnswerRepository = quizAnswerRepository;
@@ -42,13 +48,38 @@ public class QuizService {
         this.subjectRepository = subjectRepository;
         this.questionService = questionService;
         this.studyActivityService = studyActivityService;
+        this.groqAiService = groqAiService;
+        this.transactionTemplate = new TransactionTemplate(transactionManager);
     }
 
-    @Transactional
+    /**
+     * Gera um simulado com a quantidade pedida de questoes.
+     * 1) Reaproveita questoes cadastradas pelo estudante no assunto/materia (sem as genericas antigas).
+     * 2) Completa o que faltar com questoes geradas pela IA (Groq) sobre a materia/assunto.
+     * 3) Se a IA falhar, completa com questoes de revisao que citam o assunto.
+     * A chamada a IA acontece fora da transacao, para nao segurar conexao do banco.
+     */
     public QuizDetailResponse generateQuiz(User user, QuizGenerateRequest request) {
+        GenerationPlan plan = transactionTemplate.execute(status -> buildPlan(user, request));
+
+        int missing = plan.desiredCount() - plan.reuseQuestionIds().size();
+        List<GroqAiService.GeneratedQuestion> aiQuestions = missing > 0
+                ? groqAiService.generateQuizQuestions(plan.subjectName(), plan.topicName(), plan.topicDescription(),
+                        plan.topicNames(), missing)
+                : List.of();
+
+        return transactionTemplate.execute(status -> persistQuiz(user, request, plan, aiQuestions));
+    }
+
+    private record GenerationPlan(Long topicId, Long subjectId, String subjectName, String topicName,
+                                  String topicDescription, List<Long> topicIds, List<String> topicNames,
+                                  List<Long> reuseQuestionIds, int desiredCount) {
+    }
+
+    private GenerationPlan buildPlan(User user, QuizGenerateRequest request) {
         Topic topic = null;
-        Subject subject = null;
-        List<Question> candidateQuestions = new ArrayList<>();
+        Subject subject;
+        List<Question> candidateQuestions;
 
         if (request.getTopicId() != null) {
             topic = topicRepository.findByIdAndSubjectUserId(request.getTopicId(), user.getId())
@@ -63,29 +94,79 @@ public class QuizService {
             throw new IllegalArgumentException("É necessário informar ao menos um topicId ou subjectId para gerar o simulado.");
         }
 
-        // Se ainda não houver questões no banco para o assunto/matéria, cria automaticamente questões didáticas padrão
-        if (candidateQuestions.isEmpty()) {
-            if (topic != null) {
-                candidateQuestions = createDefaultQuestionsForTopic(topic);
-            } else {
-                List<Topic> topics = topicRepository.findBySubjectIdAndSubjectUserId(subject.getId(), user.getId());
-                if (topics.isEmpty()) {
-                    Topic defaultTopic = topicRepository.save(new Topic("Introdução Geral", "Conteúdo introdutório da matéria", subject));
-                    candidateQuestions = createDefaultQuestionsForTopic(defaultTopic);
-                } else {
-                    candidateQuestions = createDefaultQuestionsForTopic(topics.get(0));
-                }
+        int desiredCount = (request.getQuestionCount() != null && request.getQuestionCount() > 0)
+                ? Math.min(request.getQuestionCount(), 50)
+                : 10;
+
+        // So reaproveita questoes cadastradas pelo estudante (nao as geradas pela IA/contingencia nem as genericas antigas)
+        List<Question> reusable = new ArrayList<>(candidateQuestions.stream()
+                .filter(q -> q.getSource() == null || "MANUAL".equals(q.getSource()))
+                .filter(q -> !isLegacyGenericQuestion(q))
+                .filter(q -> q.getOptions().stream().anyMatch(QuestionOption::isCorrect))
+                .toList());
+        Collections.shuffle(reusable);
+        List<Long> reuseIds = reusable.stream().limit(desiredCount).map(Question::getId).toList();
+
+        List<Topic> targetTopics;
+        if (topic != null) {
+            targetTopics = List.of(topic);
+        } else {
+            targetTopics = topicRepository.findBySubjectIdAndSubjectUserIdOrderByNameAsc(subject.getId(), user.getId());
+            if (targetTopics.isEmpty() && reuseIds.size() < desiredCount) {
+                // Questao precisa de um assunto: cria um assunto geral na materia
+                targetTopics = List.of(topicRepository.save(new Topic("Introdução Geral", "Conteúdo introdutório da matéria", subject)));
             }
         }
 
-        int desiredCount = (request.getQuestionCount() != null && request.getQuestionCount() > 0)
-                ? request.getQuestionCount()
-                : 10;
-        int actualCount = Math.min(desiredCount, candidateQuestions.size());
+        return new GenerationPlan(
+                topic != null ? topic.getId() : null,
+                subject.getId(),
+                subject.getName(),
+                topic != null ? topic.getName() : null,
+                topic != null ? topic.getDescription() : null,
+                targetTopics.stream().map(Topic::getId).toList(),
+                targetTopics.stream().map(Topic::getName).toList(),
+                reuseIds,
+                desiredCount);
+    }
 
-        List<Question> selectedQuestions = new ArrayList<>(candidateQuestions);
+    private QuizDetailResponse persistQuiz(User user, QuizGenerateRequest request, GenerationPlan plan,
+                                           List<GroqAiService.GeneratedQuestion> aiQuestions) {
+        Subject subject = subjectRepository.findByIdAndUserId(plan.subjectId(), user.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Matéria não encontrada com ID: " + plan.subjectId()));
+        Topic topic = plan.topicId() != null
+                ? topicRepository.findByIdAndSubjectUserId(plan.topicId(), user.getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Tópico não encontrado com ID: " + plan.topicId()))
+                : null;
+        List<Topic> targetTopics = new ArrayList<>(topicRepository.findAllById(plan.topicIds()));
+        targetTopics.sort(Comparator.comparing(Topic::getName, String.CASE_INSENSITIVE_ORDER));
+
+        List<Question> selectedQuestions = new ArrayList<>(questionRepository.findAllById(plan.reuseQuestionIds()));
+
+        int index = 0;
+        for (GroqAiService.GeneratedQuestion generated : aiQuestions) {
+            if (selectedQuestions.size() >= plan.desiredCount() || targetTopics.isEmpty()) {
+                break;
+            }
+            Topic target = matchTopic(targetTopics, generated.topic(), index++);
+            Question q = new Question(generated.text(), generated.explanation(), target);
+            q.setSource("AI");
+            List<QuestionOption> options = new ArrayList<>();
+            for (int i = 0; i < generated.options().size(); i++) {
+                options.add(new QuestionOption(generated.options().get(i), i == generated.correctIndex()));
+            }
+            Collections.shuffle(options);
+            options.forEach(q::addOption);
+            selectedQuestions.add(questionRepository.save(q));
+        }
+
+        int missing = plan.desiredCount() - selectedQuestions.size();
+        if (missing > 0 && !targetTopics.isEmpty()) {
+            selectedQuestions.addAll(createFallbackQuestions(subject, targetTopics, missing));
+        }
+
         Collections.shuffle(selectedQuestions);
-        selectedQuestions = selectedQuestions.subList(0, actualCount);
+        int actualCount = selectedQuestions.size();
 
         String title = (request.getTitle() != null && !request.getTitle().isBlank())
                 ? request.getTitle().trim()
@@ -102,6 +183,25 @@ public class QuizService {
         }
 
         return mapToDetailResponse(savedQuiz);
+    }
+
+    private static Topic matchTopic(List<Topic> topics, String topicName, int index) {
+        if (topicName != null && !topicName.isBlank()) {
+            String wanted = topicName.trim().toLowerCase(Locale.ROOT);
+            for (Topic t : topics) {
+                if (t.getName() != null && t.getName().trim().toLowerCase(Locale.ROOT).equals(wanted)) {
+                    return t;
+                }
+            }
+        }
+        return topics.get(index % topics.size());
+    }
+
+    // Questoes genericas criadas pela versao antiga (sem IA); nao devem ser reaproveitadas
+    private static boolean isLegacyGenericQuestion(Question q) {
+        String text = q.getText() != null ? q.getText() : "";
+        return text.startsWith("Qual dos conceitos a seguir melhor define o foco principal do estudo de ")
+                || text.startsWith("Em relação às boas práticas aplicadas a ");
     }
 
     @Transactional(readOnly = true)
@@ -327,32 +427,99 @@ public class QuizService {
         );
     }
 
-    private List<Question> createDefaultQuestionsForTopic(Topic topic) {
+    /**
+     * Contingencia quando a IA nao responde: cria a quantidade pedida de questoes de revisao,
+     * todas citando o assunto e a materia, distribuidas entre os assuntos.
+     */
+    private List<Question> createFallbackQuestions(Subject subject, List<Topic> topics, int count) {
         List<Question> created = new ArrayList<>();
-        String topicName = topic.getName();
-
-        Question q1 = new Question(
-                "Qual dos conceitos a seguir melhor define o foco principal do estudo de " + topicName + "?",
-                "O estudo de " + topicName + " concentra-se na compreensão de fundamentos, modelos teóricos e aplicação prática estruturada.",
-                topic
-        );
-        q1.addOption(new QuestionOption("Compreensão dos fundamentos, princípios e aplicações práticas estruturadas.", true));
-        q1.addOption(new QuestionOption("Apenas memorização de dados históricos sem aplicação prática.", false));
-        q1.addOption(new QuestionOption("Substituição completa de raciocínio lógico por suposições empíricas.", false));
-        q1.addOption(new QuestionOption("Abordagem superficial sem critérios metodológicos definidos.", false));
-        created.add(questionRepository.save(q1));
-
-        Question q2 = new Question(
-                "Em relação às boas práticas aplicadas a " + topicName + ", assinale a alternativa correta:",
-                "A adoção de padrões consolidados e organização contínua garante maior qualidade e retenção do aprendizado.",
-                topic
-        );
-        q2.addOption(new QuestionOption("Adoção de padrões sistemáticos, validação consistente e revisão contínua.", true));
-        q2.addOption(new QuestionOption("Ignorar diretrizes e trabalhar de maneira desordenada.", false));
-        q2.addOption(new QuestionOption("Não realizar qualquer tipo de revisão ou teste de conhecimento.", false));
-        q2.addOption(new QuestionOption("Tratar todas as hipóteses como verdades absolutas sem validação.", false));
-        created.add(questionRepository.save(q2));
-
+        String subjectName = subject.getName();
+        for (int i = 0; i < count; i++) {
+            Topic topic = topics.get(i % topics.size());
+            String t = topic.getName();
+            int template = (i / topics.size()) % 8;
+            int round = (i / topics.size()) / 8;
+            String suffix = round > 0 ? " (revisão " + (round + 1) + ")" : "";
+            String[] parts = fallbackTemplate(template, t, subjectName, topic.getDescription());
+            Question q = new Question(parts[0] + suffix,
+                    parts[1] + " (Questão de revisão gerada sem IA: confira o conteúdo de \"" + t + "\" nos seus materiais.)",
+                    topic);
+            q.setSource("FALLBACK");
+            List<QuestionOption> options = new ArrayList<>();
+            options.add(new QuestionOption(limit(parts[2]), true));
+            options.add(new QuestionOption(limit(parts[3]), false));
+            options.add(new QuestionOption(limit(parts[4]), false));
+            options.add(new QuestionOption(limit(parts[5]), false));
+            Collections.shuffle(options);
+            options.forEach(q::addOption);
+            created.add(questionRepository.save(q));
+        }
         return created;
+    }
+
+    // {enunciado, explicacao, correta, errada1, errada2, errada3}
+    private static String[] fallbackTemplate(int n, String t, String s, String description) {
+        String desc = description != null && !description.isBlank() ? description.trim() : null;
+        return switch (n) {
+            case 0 -> desc != null
+                    ? new String[]{"De acordo com a descrição cadastrada, o assunto \"" + t + "\" de " + s + " trata de:",
+                    "A descrição do assunto \"" + t + "\" é: " + desc + ".",
+                    desc,
+                    "Um tema sem relação com " + s + ".",
+                    "Somente a história de quem criou " + s + ".",
+                    "Regras de formatação de trabalhos, sem ligação com " + t + "."}
+                    : new String[]{"O assunto \"" + t + "\" faz parte de qual matéria no seu plano de estudos?",
+                    "\"" + t + "\" está cadastrado dentro da matéria " + s + ".",
+                    s,
+                    "Nenhuma matéria: \"" + t + "\" é um assunto avulso.",
+                    "Todas as matérias ao mesmo tempo.",
+                    "Uma matéria que ainda não foi criada."};
+            case 1 -> new String[]{"Ao revisar \"" + t + "\" (" + s + "), qual atitude mostra que você realmente entendeu o assunto?",
+                    "Explicar \"" + t + "\" com suas palavras e aplicar em exemplos mostra domínio do conteúdo.",
+                    "Explicar \"" + t + "\" com suas palavras e resolver um exemplo sem consultar o material.",
+                    "Reconhecer o nome \"" + t + "\" quando ele aparece no texto.",
+                    "Ter lido o material de \"" + t + "\" uma vez, sem fazer exercícios.",
+                    "Copiar o resumo de \"" + t + "\" de um colega."};
+            case 2 -> new String[]{"Você errou uma questão de \"" + t + "\". Qual é o melhor próximo passo?",
+                    "Entender por que errou em \"" + t + "\" evita repetir o mesmo erro.",
+                    "Ler a explicação, revisar o ponto de \"" + t + "\" que causou o erro e refazer a questão.",
+                    "Ignorar o erro e seguir para outro assunto de " + s + ".",
+                    "Decorar a letra certa daquela questão de \"" + t + "\".",
+                    "Desistir de \"" + t + "\" porque é difícil demais."};
+            case 3 -> new String[]{"Qual material é mais útil para fixar os conceitos de \"" + t + "\"?",
+                    "Um resumo próprio, com os conceitos-chave de \"" + t + "\", facilita a revisão antes da prova.",
+                    "Um resumo próprio com os conceitos-chave de \"" + t + "\" e exemplos resolvidos.",
+                    "Uma lista de respostas prontas sem os conceitos de \"" + t + "\".",
+                    "Anotações de outra matéria que não " + s + ".",
+                    "Nenhum material: só ouvir a aula de \"" + t + "\" uma vez basta."};
+            case 4 -> new String[]{"Para se preparar para uma prova de " + s + " que cobra \"" + t + "\", o mais eficiente é:",
+                    "Treinar com questões no formato da prova revela as lacunas em \"" + t + "\".",
+                    "Resolver simulados com questões de \"" + t + "\" e revisar os erros.",
+                    "Estudar \"" + t + "\" só na véspera, de madrugada.",
+                    "Ler apenas os títulos dos capítulos de " + s + ".",
+                    "Pular \"" + t + "\" e torcer para não cair."};
+            case 5 -> new String[]{"Como relacionar \"" + t + "\" com outros assuntos de " + s + "?",
+                    "Ligar \"" + t + "\" aos outros assuntos de " + s + " ajuda a lembrar e aplicar o conteúdo.",
+                    "Montar um mapa mental ligando \"" + t + "\" aos assuntos vizinhos de " + s + ".",
+                    "Estudar \"" + t + "\" isolado, sem pensar no restante de " + s + ".",
+                    "Evitar comparar \"" + t + "\" com qualquer outro conteúdo.",
+                    "Trocar " + s + " por outra matéria sempre que \"" + t + "\" aparecer."};
+            case 6 -> new String[]{"Qual a melhor forma de usar o tutor de IA do Trilha+ para estudar \"" + t + "\"?",
+                    "Perguntas específicas sobre \"" + t + "\" geram explicações mais úteis.",
+                    "Fazer perguntas específicas sobre os pontos de \"" + t + "\" que ainda não ficaram claros.",
+                    "Pedir apenas a resposta final, sem entender \"" + t + "\".",
+                    "Perguntar sobre assuntos sem relação com " + s + ".",
+                    "Não usar o tutor e não revisar \"" + t + "\"."};
+            default -> new String[]{"Com que frequência vale revisar \"" + t + "\" para não esquecer?",
+                    "Revisões espaçadas mantêm \"" + t + "\" na memória por mais tempo.",
+                    "Em revisões espaçadas (ex.: 1 dia, 1 semana e 1 mês depois) de \"" + t + "\".",
+                    "Uma única vez; depois \"" + t + "\" nunca mais é esquecido.",
+                    "Só quando aparecer uma prova de " + s + ".",
+                    "Nunca: revisar \"" + t + "\" atrapalha o aprendizado."};
+        };
+    }
+
+    private static String limit(String text) {
+        return text.length() > 255 ? text.substring(0, 252) + "..." : text;
     }
 }

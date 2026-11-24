@@ -36,6 +36,20 @@ public class User {
     @Column(name = "avatar_emoji", length = 20)
     private String avatarEmoji = "🎓";
 
+    // Chave de recuperacao de senha (formato TRLH-XXXX-XXXX-XXXX). So o hash BCrypt fica no banco.
+    @Column(name = "recovery_key_hash")
+    private String recoveryKeyHash;
+
+    @Column(name = "recovery_key_created_at")
+    private java.time.LocalDateTime recoveryKeyCreatedAt;
+
+    // LGPD/ECA: quando e qual versao dos Termos de Uso e da Politica de Privacidade o estudante aceitou
+    @Column(name = "terms_accepted_at")
+    private java.time.LocalDateTime termsAcceptedAt;
+
+    @Column(name = "terms_version", length = 20)
+    private String termsVersion;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private java.util.List<Subject> subjects = new java.util.ArrayList<>();
 
@@ -97,6 +111,38 @@ public class User {
 
     public void setAvatarEmoji(String avatarEmoji) {
         this.avatarEmoji = avatarEmoji;
+    }
+
+    public String getRecoveryKeyHash() {
+        return recoveryKeyHash;
+    }
+
+    public void setRecoveryKeyHash(String recoveryKeyHash) {
+        this.recoveryKeyHash = recoveryKeyHash;
+    }
+
+    public java.time.LocalDateTime getRecoveryKeyCreatedAt() {
+        return recoveryKeyCreatedAt;
+    }
+
+    public void setRecoveryKeyCreatedAt(java.time.LocalDateTime recoveryKeyCreatedAt) {
+        this.recoveryKeyCreatedAt = recoveryKeyCreatedAt;
+    }
+
+    public java.time.LocalDateTime getTermsAcceptedAt() {
+        return termsAcceptedAt;
+    }
+
+    public void setTermsAcceptedAt(java.time.LocalDateTime termsAcceptedAt) {
+        this.termsAcceptedAt = termsAcceptedAt;
+    }
+
+    public String getTermsVersion() {
+        return termsVersion;
+    }
+
+    public void setTermsVersion(String termsVersion) {
+        this.termsVersion = termsVersion;
     }
 
     public java.util.List<Subject> getSubjects() {

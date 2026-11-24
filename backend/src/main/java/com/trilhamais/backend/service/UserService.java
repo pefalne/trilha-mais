@@ -32,20 +32,31 @@ public class UserService {
     private final QuizRepository quizRepository;
     private final UserSettingsRepository userSettingsRepository;
     private final StudyActivityService studyActivityService;
+    private final RecoveryKeyService recoveryKeyService;
+
+    /** Versao atual dos Termos de Uso e da Politica de Privacidade (usada quando o app nao informa). */
+    public static final String DEFAULT_TERMS_VERSION = "2026-11-24";
 
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder,
                        SubjectRepository subjectRepository, QuizRepository quizRepository,
-                       UserSettingsRepository userSettingsRepository, StudyActivityService studyActivityService) {
+                       UserSettingsRepository userSettingsRepository, StudyActivityService studyActivityService,
+                       RecoveryKeyService recoveryKeyService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.subjectRepository = subjectRepository;
         this.quizRepository = quizRepository;
         this.userSettingsRepository = userSettingsRepository;
         this.studyActivityService = studyActivityService;
+        this.recoveryKeyService = recoveryKeyService;
     }
 
     @Transactional
     public UserResponse register(RegisterRequest request) {
+        // LGPD/ECA: sem aceite dos Termos de Uso e da Politica de Privacidade nao ha cadastro
+        if (!Boolean.TRUE.equals(request.getAcceptedTerms())) {
+            throw new IllegalArgumentException("É preciso aceitar os Termos de Uso e a Política de Privacidade.");
+        }
+
         // Normaliza o e-mail removendo espacos e convertendo para minusculo
         String normalizedEmail = request.getEmail().trim().toLowerCase();
 
@@ -59,10 +70,23 @@ public class UserService {
 
         // 3. Cria e salva o novo usuario
         User user = new User(request.getName().trim(), normalizedEmail, hashedPassword);
+        String termsVersion = request.getTermsVersion() != null && !request.getTermsVersion().isBlank()
+                ? request.getTermsVersion().trim()
+                : DEFAULT_TERMS_VERSION;
+        if (termsVersion.length() > 20) {
+            termsVersion = termsVersion.substring(0, 20);
+        }
+        user.setTermsAcceptedAt(java.time.LocalDateTime.now());
+        user.setTermsVersion(termsVersion);
+
+        // 4. Gera a chave de recuperacao (so o hash fica no banco)
+        String recoveryKey = recoveryKeyService.issueNewKey(user);
         User savedUser = userRepository.save(user);
 
-        // 4. Retorna apenas os dados publicos necessarios (sem senha)
-        return new UserResponse(savedUser.getId(), savedUser.getName(), savedUser.getEmail());
+        // 5. Retorna apenas os dados publicos (sem senha) + a chave em texto, mostrada uma unica vez
+        UserResponse response = new UserResponse(savedUser.getId(), savedUser.getName(), savedUser.getEmail());
+        response.setRecoveryKey(recoveryKey);
+        return response;
     }
 
     /**

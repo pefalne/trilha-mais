@@ -26,8 +26,30 @@ function trechos(linha: string, estilo?: StyleProp<TextStyle>) {
 export default function TextoFormatado({ texto, estilo }: Props) {
   const linhas = texto.replace(/\r/g, '').replace(/<br\s*\/?>/gi, '\n').split('\n');
   const blocos: React.ReactNode[] = [];
+  let codigo: string[] | null = null; // dentro de um bloco ```...```
+  let linguagem = '';
+
+  const fecharCodigo = (chave: number) => {
+    if (!codigo) return;
+    blocos.push(
+      <View key={`c${chave}`} style={st.blocoCodigo}>
+        {linguagem ? <Text style={st.rotuloCodigo}>{linguagem}</Text> : null}
+        <Text style={st.textoCodigo} selectable>{codigo.join('\n').replace(/\s+$/, '')}</Text>
+      </View>,
+    );
+    codigo = null;
+    linguagem = '';
+  };
 
   linhas.forEach((bruta, i) => {
+    const cerca = bruta.trim().match(/^(```|~~~)\s*([\w+#.-]*)/);
+    if (cerca) {
+      if (codigo) fecharCodigo(i);
+      else { codigo = []; linguagem = cerca[2] ?? ''; }
+      return;
+    }
+    if (codigo) { codigo.push(bruta.replace(/\t/g, '    ')); return; }
+
     const linha = bruta.trim();
     if (!linha) {
       blocos.push(<View key={i} style={st.espaco} />);
@@ -68,13 +90,17 @@ export default function TextoFormatado({ texto, estilo }: Props) {
     blocos.push(<Text key={i} style={estilo}>{trechos(linha, estilo)}</Text>);
   });
 
+  fecharCodigo(linhas.length); // resposta cortada no meio do bloco
   return <View>{blocos}</View>;
 }
 
 const st = StyleSheet.create({
   negrito: { fontWeight: '700' },
   italico: { fontStyle: 'italic' },
-  codigo: { fontFamily: 'monospace' },
+  codigo: { fontFamily: 'monospace', backgroundColor: '#EEF2F7', borderRadius: 4, paddingHorizontal: 3 },
+  blocoCodigo: { backgroundColor: '#0F172A', borderRadius: 10, padding: 12, marginVertical: 6 },
+  rotuloCodigo: { color: '#94A3B8', fontSize: 11, fontWeight: '700', marginBottom: 6, textTransform: 'uppercase' },
+  textoCodigo: { color: '#E2E8F0', fontFamily: 'monospace', fontSize: 13, lineHeight: 19 },
   titulo: { fontWeight: '700', fontSize: 16, marginTop: 4, marginBottom: 2 },
   espaco: { height: 8 },
   linhaLista: { flexDirection: 'row', marginBottom: 2 },

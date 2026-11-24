@@ -116,10 +116,14 @@ Com o back-end em execução, acesse pelo navegador:
 ### 3. Autenticação e Usuários
 | Método | Endpoint | Protegido? | Descrição |
 | :--- | :--- | :---: | :--- |
-| `POST` | `/api/users/register` | Não | Cadastra um novo estudante |
+| `POST` | `/api/users/register` | Não | Cadastra um novo estudante. Exige `acceptedTerms: true` (`termsVersion` opcional) e devolve a chave de recuperação `recoveryKey` uma única vez |
 | `POST` | `/api/auth/login` | Não | Autentica e retorna o JWT |
-| `POST` | `/api/auth/forgot-password` | Não | Envia código de 6 dígitos por e-mail para recuperar a senha |
-| `POST` | `/api/auth/reset-password` | Não | Troca a senha usando o código recebido |
+| `POST` | `/api/auth/reset-password-key` | Não | Troca a senha com `{ email, recoveryKey, newPassword }` e devolve uma nova chave (a antiga deixa de valer). 5 erros por e-mail em 15 min = 429 |
+| `POST` | `/api/auth/forgot-password` | Não | (Legado) Código de 6 dígitos por e-mail; só funciona com servidor de e-mail configurado |
+| `POST` | `/api/auth/reset-password` | Não | (Legado) Troca a senha usando o código do e-mail |
+| `POST` | `/api/users/me/recovery-key` | Sim | Gera nova chave de recuperação (a anterior deixa de valer) |
+| `GET` | `/api/users/me/export` | Sim | LGPD: baixa todos os dados do estudante em JSON |
+| `DELETE` | `/api/users/me` | Sim | LGPD: apaga a conta e todos os dados (corpo `{ "password": "..." }`), responde 204 |
 | `GET` | `/api/users/profile` | Sim | Retorna os dados do estudante autenticado |
 | `GET` | `/api/users/me` | Sim | Perfil completo com métricas de desempenho e ofensiva |
 | `PUT` | `/api/users/me` | Sim | Edita nome e avatar |

@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trilha+ | Plataforma de estudos com agenda, simulados e IA</title>
+<meta name="description" content="Organize matérias, monte sua agenda, faça simulados por assunto e tire dúvidas com um assistente de IA. Abre no navegador do computador e do celular. Grátis por tempo limitado.">
+<meta name="theme-color" content="#0B1B3F">
+<link rel="canonical" href="https://trilha-mais.vercel.app/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:site_name" content="Trilha+">
+<meta property="og:title" content="Trilha+ | Plataforma de estudos com agenda, simulados e IA">
+<meta property="og:description" content="Organize matérias, monte sua agenda, faça simulados por assunto e tire dúvidas com um assistente de IA. Abre no navegador do computador e do celular. Grátis por tempo limitado.">
+<meta property="og:url" content="https://trilha-mais.vercel.app/">
+<meta property="og:image" content="https://trilha-mais.vercel.app/assets/laptop-home.webp">
+<meta property="og:image:width" content="1600">
+<meta property="og:image:height" content="1017">
+<meta property="og:image:alt" content="Tela inicial do Trilha+ aberta num notebook, com progresso geral e lista de matérias">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" href="/assets/favicon.png">
+<link rel="apple-touch-icon" href="/assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="/assets/site.css">
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+<a class="skip" href="#conteudo">Pular para o conteúdo</a>
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="/" aria-label="Trilha+, página inicial">
+      <span class="brand-mark"><img src="/assets/logo.png" alt="" width="28" height="30"></span>
+      <span>Trilha<b>+</b></span>
+    </a>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav" aria-label="Abrir menu">
+      <svg class="i-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      <svg class="i-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <nav class="nav" id="nav" aria-label="Principal">
+      <a class="nav-link" href="#recursos">Recursos</a>
+      <a class="nav-link" href="#como-funciona">Como funciona</a>
+      <a class="nav-link" href="#acesso">Acesso</a>
+      <a class="nav-link" href="#equipe">Equipe</a>
+      <a class="nav-link" href="#duvidas">Dúvidas</a>
+      <div class="nav-actions">
+        <a class="btn btn-ghost btn-sm" href="/app/entrar">Entrar</a>
+        <a class="btn btn-primary btn-sm" href="/app/cadastro">Criar conta grátis</a>
+      </div>
+    </nav>
+  </div>
+</header>
+<main id="conteudo">
+
+<section class="hero" aria-labelledby="hero-title">
+  <div class="contours" aria-hidden="true"><svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice"><path d="M1238 250 L1237 256 L1235 261 L1232 266 L1229 271 L1225 276 L1220 280 L1216 284 L1211 288 L1206 292 L1201 295 L1196 298 L1190 301 L1184 303 L1177 305 L1170 306 L1164 307 L1157 307 L1150 307 L1143 307 L1136 307 L1130 307 L1122 306 L1115 305 L1108 304 L1101 301 L1095 299 L1089 295 L1085 291 L1081 286 L1078 281 L1077 275 L1076 270 L1075 265 L1075 260 L1074 255 L1074 250 L1073 245 L1073 240 L1073 235 L1073 229 L1075 224 L1077 219 L1081 214 L1085 210 L1090 206 L1096 202 L1102 199 L1108 197 L1115 194 L1122 192 L1129 191 L1136 190 L1143 189 L1150 189 L1157 190 L1164 191 L1171 193 L1177 196 L1182 199 L1188 202 L1193 205 L1197 208 L1202 211 L1207 214 L1213 218 L1218 221 L1223 225 L1228 229 L1232 234 L1236 239 L1237 244 L1238 250Z"/>
+<path d="M1324 250 L1322 261 L1317 272 L1311 282 L1303 291 L1295 300 L1287 309 L1279 317 L1270 325 L1261 332 L1251 339 L1240 345 L1228 350 L1216 354 L1203 357 L1190 360 L1176 361 L1163 362 L1150 362 L1137 362 L1123 363 L1109 363 L1095 362 L1081 360 L1066 357 L1053 353 L1041 346 L1030 339 L1022 330 L1016 320 L1011 309 L1009 299 L1007 289 L1005 279 L1004 269 L1002 260 L1000 250 L998 240 L996 230 L996 219 L997 209 L1000 198 L1006 188 L1013 179 L1022 170 L1032 163 L1044 156 L1056 150 L1068 145 L1081 141 L1094 137 L1108 133 L1122 131 L1136 130 L1150 130 L1164 132 L1177 135 L1190 140 L1202 145 L1212 151 L1222 157 L1232 163 L1242 169 L1252 174 L1263 180 L1275 185 L1286 192 L1297 199 L1307 208 L1315 217 L1321 228 L1324 239 L1324 250Z"/>
+<path d="M1410 250 L1405 267 L1397 282 L1387 297 L1376 311 L1365 324 L1353 337 L1341 349 L1329 361 L1315 372 L1300 382 L1284 391 L1266 399 L1247 404 L1228 409 L1208 412 L1189 414 L1170 416 L1150 417 L1130 419 L1110 420 L1088 420 L1067 420 L1045 417 L1024 412 L1004 405 L986 394 L972 382 L961 368 L953 352 L947 337 L943 321 L940 307 L937 292 L934 278 L930 264 L925 250 L921 235 L918 220 L917 204 L919 188 L924 172 L933 157 L945 143 L959 131 L975 120 L992 110 L1010 101 L1028 94 L1047 86 L1067 80 L1087 76 L1108 72 L1129 71 L1150 72 L1171 76 L1190 82 L1208 89 L1225 97 L1241 106 L1256 114 L1271 122 L1287 129 L1303 136 L1321 144 L1340 152 L1358 161 L1375 172 L1390 185 L1402 200 L1409 216 L1411 233 L1410 250Z"/>
+<path d="M1494 250 L1486 272 L1475 292 L1462 312 L1448 330 L1434 348 L1419 365 L1404 382 L1387 398 L1369 412 L1349 426 L1327 437 L1303 446 L1278 453 L1253 459 L1227 463 L1201 466 L1176 470 L1150 473 L1123 476 L1095 479 L1067 481 L1037 480 L1008 476 L980 468 L954 457 L933 442 L915 424 L902 404 L893 383 L886 363 L881 343 L876 324 L870 305 L863 287 L855 269 L847 250 L840 230 L836 209 L835 187 L838 166 L847 145 L860 126 L876 108 L896 92 L917 77 L940 64 L963 52 L988 42 L1013 32 L1039 24 L1066 17 L1094 14 L1122 14 L1150 16 L1177 22 L1202 31 L1226 41 L1247 52 L1268 63 L1288 72 L1310 81 L1332 89 L1357 97 L1382 106 L1409 116 L1434 128 L1457 144 L1476 162 L1490 183 L1497 205 L1499 227 L1494 250Z"/>
+<path d="M1576 250 L1565 277 L1550 302 L1534 326 L1518 349 L1502 371 L1485 393 L1466 414 L1446 434 L1423 452 L1397 468 L1369 482 L1339 492 L1308 501 L1277 508 L1245 513 L1214 519 L1182 525 L1150 531 L1116 537 L1081 542 L1044 544 L1006 542 L970 536 L936 525 L906 508 L881 488 L861 464 L847 438 L837 412 L829 387 L822 363 L813 341 L803 319 L791 297 L778 274 L766 250 L756 224 L751 198 L751 171 L757 144 L769 118 L786 94 L808 73 L833 53 L860 35 L888 19 L917 3 L947 -11 L978 -23 L1011 -33 L1045 -40 L1080 -43 L1115 -42 L1150 -37 L1183 -28 L1213 -17 L1242 -4 L1268 9 L1294 21 L1321 31 L1349 39 L1380 47 L1413 55 L1448 65 L1483 77 L1515 94 L1543 114 L1565 138 L1579 165 L1585 193 L1584 222 L1576 250Z"/>
+<path d="M1655 250 L1640 282 L1623 312 L1605 340 L1588 368 L1570 395 L1551 421 L1529 447 L1504 470 L1476 492 L1444 510 L1410 525 L1374 537 L1337 547 L1300 556 L1264 564 L1227 573 L1189 582 L1150 592 L1109 601 L1065 607 L1020 610 L975 607 L932 597 L892 580 L859 558 L832 531 L811 501 L796 470 L785 440 L774 411 L763 384 L750 358 L734 333 L715 307 L697 279 L681 250 L669 219 L663 186 L665 154 L674 122 L691 91 L714 63 L741 38 L771 14 L803 -7 L836 -28 L870 -47 L905 -64 L943 -79 L983 -90 L1025 -97 L1067 -99 L1109 -95 L1150 -87 L1188 -74 L1224 -60 L1257 -46 L1289 -32 L1321 -21 L1354 -12 L1391 -5 L1431 2 L1474 10 L1518 21 L1561 37 L1600 58 L1631 84 L1654 114 L1667 147 L1671 182 L1666 217 L1655 250Z"/>
+<path d="M1730 250 L1713 286 L1694 321 L1676 354 L1658 387 L1638 419 L1617 450 L1591 479 L1562 506 L1528 530 L1490 550 L1449 567 L1408 580 L1365 592 L1324 604 L1282 616 L1240 629 L1196 643 L1150 656 L1101 668 L1049 676 L995 678 L943 671 L894 656 L851 634 L815 604 L787 571 L766 535 L749 499 L735 465 L721 433 L704 404 L684 376 L660 347 L635 317 L611 285 L591 250 L577 213 L573 175 L578 136 L592 100 L614 65 L642 33 L674 3 L709 -24 L745 -50 L783 -74 L822 -97 L864 -117 L908 -134 L956 -146 L1005 -151 L1055 -151 L1104 -144 L1150 -132 L1193 -117 L1233 -100 L1271 -85 L1309 -73 L1348 -64 L1390 -58 L1437 -53 L1487 -48 L1541 -39 L1594 -26 L1644 -6 L1687 20 L1721 53 L1743 90 L1753 130 L1753 171 L1744 211 L1730 250Z"/>
+<path d="M1802 250 L1783 291 L1765 330 L1747 368 L1728 406 L1707 442 L1683 478 L1653 511 L1618 541 L1578 567 L1534 589 L1487 607 L1440 623 L1394 637 L1348 653 L1302 670 L1254 688 L1204 708 L1150 726 L1092 740 L1032 747 L970 746 L912 735 L858 714 L812 683 L775 647 L746 606 L724 565 L706 526 L688 490 L667 456 L643 425 L614 395 L581 363 L549 329 L520 291 L497 250 L484 207 L482 163 L492 119 L511 78 L539 39 L572 3 L608 -31 L647 -63 L687 -93 L729 -122 L774 -148 L822 -171 L874 -188 L929 -199 L986 -202 L1043 -198 L1098 -187 L1150 -172 L1198 -155 L1242 -138 L1286 -125 L1330 -115 L1377 -110 L1429 -108 L1487 -106 L1549 -102 L1613 -93 L1674 -76 L1730 -51 L1776 -18 L1809 22 L1828 67 L1835 114 L1830 161 L1818 207 L1802 250Z"/>
+<path d="M1871 250 L1853 296 L1835 340 L1818 383 L1799 425 L1776 466 L1748 506 L1713 542 L1672 574 L1625 602 L1575 625 L1524 646 L1473 664 L1423 683 L1373 704 L1323 728 L1270 753 L1212 777 L1150 799 L1083 814 L1014 820 L946 814 L882 796 L825 766 L777 728 L740 684 L710 638 L686 593 L664 552 L640 515 L611 480 L577 448 L538 415 L496 380 L457 341 L424 297 L401 250 L390 201 L392 151 L407 103 L432 56 L465 13 L502 -27 L542 -65 L584 -102 L628 -137 L675 -170 L726 -199 L781 -223 L841 -240 L905 -249 L970 -249 L1033 -240 L1094 -226 L1150 -208 L1202 -190 L1251 -175 L1300 -165 L1352 -161 L1409 -162 L1473 -164 L1543 -165 L1616 -161 L1690 -150 L1758 -128 L1818 -96 L1864 -55 L1894 -7 L1909 45 L1911 99 L1903 152 L1888 202 L1871 250Z"/>
+<path d="M213 820 L213 826 L212 832 L209 838 L206 843 L202 848 L198 853 L193 858 L189 863 L184 867 L179 872 L174 877 L168 881 L161 886 L154 889 L146 892 L138 894 L129 894 L120 893 L112 891 L104 889 L96 886 L89 882 L83 879 L76 876 L70 873 L63 870 L56 867 L49 864 L42 860 L36 856 L31 851 L27 845 L24 839 L22 833 L21 826 L22 820 L23 814 L24 807 L26 801 L28 795 L32 789 L36 784 L40 779 L46 774 L53 770 L60 767 L68 765 L76 763 L83 762 L91 761 L98 760 L105 759 L113 757 L120 755 L128 754 L136 752 L145 751 L154 751 L163 752 L172 754 L180 757 L186 761 L192 766 L197 772 L201 778 L204 784 L206 790 L209 796 L210 802 L212 808 L213 814 L213 820Z"/>
+<path d="M294 820 L292 831 L289 842 L285 853 L279 863 L272 872 L264 882 L256 891 L248 900 L240 909 L231 918 L221 927 L210 936 L198 944 L184 950 L169 954 L152 956 L136 956 L120 954 L105 950 L90 945 L77 940 L64 934 L51 929 L39 924 L26 919 L13 915 L-1 909 L-14 903 L-26 896 L-37 887 L-47 878 L-54 867 L-59 855 L-61 844 L-62 832 L-62 820 L-61 808 L-58 797 L-55 785 L-50 774 L-44 763 L-37 753 L-27 744 L-16 736 L-3 729 L11 723 L25 719 L39 716 L53 714 L67 711 L80 708 L93 705 L106 701 L120 697 L135 693 L151 690 L168 689 L184 689 L201 692 L216 696 L230 703 L242 712 L252 722 L261 732 L268 743 L274 754 L279 765 L284 776 L288 787 L291 798 L293 809 L294 820Z"/>
+<path d="M373 820 L371 836 L366 852 L359 867 L350 882 L340 896 L330 910 L320 924 L309 938 L298 952 L285 966 L271 980 L254 992 L235 1003 L214 1011 L191 1016 L167 1017 L143 1016 L120 1012 L98 1006 L77 999 L58 992 L39 985 L20 979 L1 973 L-19 967 L-40 961 L-60 953 L-79 944 L-97 932 L-112 919 L-125 905 L-134 888 L-140 872 L-144 854 L-145 837 L-145 820 L-144 803 L-140 786 L-136 769 L-129 753 L-120 737 L-108 723 L-93 709 L-76 698 L-57 689 L-37 682 L-16 676 L4 671 L23 666 L42 662 L61 656 L79 650 L99 643 L120 636 L142 630 L166 626 L191 624 L215 626 L239 631 L261 640 L280 651 L297 664 L311 679 L323 694 L333 709 L343 725 L351 740 L359 756 L365 771 L370 787 L373 804 L373 820Z"/>
+<path d="M452 820 L448 841 L441 862 L432 882 L421 901 L410 920 L398 939 L385 958 L372 977 L358 996 L341 1015 L322 1033 L299 1049 L272 1062 L243 1071 L212 1076 L181 1076 L150 1073 L120 1067 L92 1060 L65 1052 L39 1044 L13 1037 L-12 1030 L-39 1024 L-66 1017 L-94 1009 L-121 998 L-146 985 L-168 970 L-187 951 L-202 931 L-213 910 L-221 888 L-226 865 L-228 843 L-228 820 L-227 798 L-223 775 L-217 753 L-208 732 L-194 711 L-178 693 L-157 676 L-134 662 L-108 651 L-82 641 L-56 634 L-31 626 L-7 619 L17 611 L41 601 L65 591 L92 580 L120 571 L150 563 L182 559 L215 559 L246 563 L276 572 L304 584 L328 600 L349 618 L367 637 L384 656 L398 676 L411 696 L423 715 L434 735 L443 756 L449 777 L452 798 L452 820Z"/>
+<path d="M529 820 L524 846 L515 872 L504 896 L492 920 L480 944 L467 968 L453 993 L438 1018 L420 1043 L399 1066 L373 1088 L343 1106 L309 1120 L272 1129 L233 1133 L194 1132 L156 1127 L120 1120 L86 1112 L52 1104 L20 1096 L-13 1090 L-46 1084 L-80 1077 L-115 1069 L-150 1058 L-183 1044 L-213 1027 L-240 1007 L-262 983 L-279 958 L-292 931 L-301 904 L-307 876 L-311 848 L-312 820 L-311 792 L-306 764 L-298 737 L-285 711 L-267 686 L-245 664 L-218 645 L-189 628 L-158 614 L-126 603 L-95 592 L-66 582 L-37 570 L-9 557 L20 543 L51 529 L84 515 L120 503 L158 495 L198 491 L238 493 L277 501 L313 513 L346 530 L375 551 L400 573 L423 596 L443 619 L462 643 L480 666 L496 690 L509 715 L520 741 L528 767 L531 793 L529 820Z"/></svg></div>
+  <div class="wrap hero-grid">
+    <div class="hero-text">
+      <span class="badge reveal">Grátis por tempo limitado</span>
+      <h1 id="hero-title" class="reveal reveal-d1">Saiba o que estudar hoje e o que precisa revisar.</h1>
+      <p class="hero-lead reveal reveal-d2">O Trilha+ é uma plataforma de estudos que junta agenda, matérias com progresso, simulados por assunto e um assistente de IA para tirar dúvidas. Abre no navegador do computador e do celular.</p>
+      <div class="hero-actions reveal reveal-d3">
+        <a class="btn btn-primary" href="/app/cadastro">Criar conta grátis</a>
+        <a class="btn btn-ghost" href="#recursos">Ver os recursos</a>
+      </div>
+      <p class="hero-note reveal reveal-d3">Não precisa instalar nada. Já tem conta? <a href="/app/entrar">Entrar</a></p>
+    </div>
+    <div class="hero-visual reveal reveal-d2">
+      <img class="laptop" src="/assets/laptop-home.webp" width="1600" height="1017" alt="Tela inicial do Trilha+ no notebook: saudação, progresso geral de 44%, contagem de matérias, assuntos e avaliações e a lista de matérias com a porcentagem de cada uma" fetchpriority="high">
+      <img class="phone" src="/assets/phone-01-home.webp" width="700" height="1343" alt="A mesma tela inicial do Trilha+ aberta no celular">
+    </div>
+  </div>
+</section>
+<div class="trail" aria-hidden="true"><svg viewBox="0 0 1440 140" preserveAspectRatio="none"><path class="trail-shadow" pathLength="1" d="M1180 0 C1180 60 900 40 760 72 S420 96 300 140"/><path pathLength="1" d="M1180 0 C1180 60 900 40 760 72 S420 96 300 140"/></svg></div>
+
+<section class="sec sec-ice" id="problema" aria-labelledby="problema-title">
+  <div class="wrap problem-grid">
+    <div class="reveal">
+      <p class="big-number" aria-hidden="true">60<span>%</span></p>
+      <p class="problem-fact">dos alunos que entraram no ensino superior em 2015 desistiram do curso de ingresso até 2024.</p>
+      <p class="source">Fonte: INEP, Censo da Educação Superior 2024.</p>
+    </div>
+    <div class="problem-text reveal reveal-d1">
+      <h2 id="problema-title">6 em cada 10 não terminam o curso em que entraram</h2>
+      <p>Os motivos são muitos, e nenhum aplicativo resolve todos eles.</p>
+      <p>O Trilha+ cuida da parte que está ao alcance de cada aluno: ter um plano para a semana, cumprir esse plano e perceber cedo quando uma matéria começa a ficar para trás.</p>
+    </div>
+  </div>
+</section>
+<div class="trail" aria-hidden="true"><svg viewBox="0 0 1440 140" preserveAspectRatio="none"><path class="trail-shadow" pathLength="1" d="M300 0 C300 50 520 40 720 70 S1060 110 1140 140"/><path pathLength="1" d="M300 0 C300 50 520 40 720 70 S1060 110 1140 140"/></svg></div>
+
+<section class="sec sec-white" id="recursos" aria-labelledby="recursos-title">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <h2 id="recursos-title">O que você encontra no Trilha+</h2>
+      <p>Quatro ferramentas que conversam entre si. O que você marca na agenda e acerta no simulado aparece no seu painel.</p>
+    </div>
+
+    <article class="feature">
+      <div class="feature-text reveal">
+        <h3>Agenda da semana</h3>
+        <p>Coloque revisão, lista de exercícios e simulado com dia e hora. Um toque marca a tarefa como feita, e o resto da semana continua à vista.</p>
+        <ul>
+          <li>Tarefas separadas por dia</li>
+          <li>Cada tarefa ligada à sua matéria</li>
+        </ul>
+      </div>
+      <div class="feature-media reveal reveal-d1">
+        <img class="phone-shot shot-frame" src="/assets/phone-02-agenda.webp" width="700" height="1343" loading="lazy" alt="Tela Minha Agenda no celular, com tarefas de hoje, amanhã e dos próximos dias, cada uma com horário e matéria">
+      </div>
+    </article>
+
+    <article class="feature flip">
+      <div class="feature-text reveal">
+        <h3>Matérias, assuntos e simulados</h3>
+        <p>Cada matéria vira uma lista de assuntos com situação: pendente, em andamento ou concluído. Para cada assunto, você gera um simulado e descobre o que já domina.</p>
+        <ul>
+          <li>Progresso da matéria em porcentagem</li>
+          <li>Simulado por assunto, na hora que precisar</li>
+        </ul>
+      </div>
+      <div class="feature-media reveal reveal-d1">
+        <img class="phone-shot shot-frame" src="/assets/phone-09-assuntos.webp" width="700" height="1343" loading="lazy" alt="Matéria Algoritmos e Lógica no celular, com 60% de progresso e assuntos marcados como concluído, pendente ou em andamento">
+      </div>
+    </article>
+
+    <article class="feature wide">
+      <div class="feature-text reveal">
+        <h3>Painel de desempenho</h3>
+        <p>Média geral, dias seguidos de estudo e a nota de cada matéria em barras. O painel mostra sua melhor matéria e a que precisa de revisão.</p>
+        <ul>
+          <li>Sequência de dias estudando</li>
+          <li>Melhor matéria e matéria para revisar</li>
+        </ul>
+      </div>
+      <div class="feature-media reveal reveal-d1">
+        <img class="laptop-shot shot-frame" src="/assets/laptop-progresso.webp" width="1600" height="1017" loading="lazy" alt="Tela Meu Desempenho no notebook: média geral de 68%, barras de desempenho por matéria, melhor matéria e matéria que precisa de revisão">
+      </div>
+    </article>
+
+    <div class="feature-ai">
+      <article class="feature flip">
+        <div class="feature-text reveal">
+          <h3>Assistente para tirar dúvidas</h3>
+          <p>Pergunte do jeito que perguntaria a um colega, como “qual a diferença entre INNER JOIN e LEFT JOIN?”. O assistente usa o gpt-oss, um modelo de IA de código aberto, executado pela Groq.</p>
+          <p class="ai-note">A IA pode errar. Use as respostas como apoio e confira com o material da aula e com seu professor.</p>
+        </div>
+        <div class="feature-media reveal reveal-d1">
+          <img class="phone-shot shot-frame" src="/assets/phone-05-chat.webp" width="700" height="1343" loading="lazy" alt="Conversa com o Assistente IA no celular: o aluno pergunta a diferença entre INNER JOIN e LEFT JOIN e recebe uma explicação com exemplo">
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+<div class="trail" aria-hidden="true"><svg viewBox="0 0 1440 140" preserveAspectRatio="none"><path class="trail-shadow" pathLength="1" d="M1140 0 C1140 70 860 30 700 68 S380 120 260 140"/><path pathLength="1" d="M1140 0 C1140 70 860 30 700 68 S380 120 260 140"/></svg></div>
+
+<section class="sec sec-ice" id="como-funciona" aria-labelledby="como-title">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <h2 id="como-title">Como começar</h2>
+      <p>Três passos, do cadastro ao primeiro simulado.</p>
+    </div>
+    <div class="steps-wrap">
+    <div class="steps-line" aria-hidden="true"><svg viewBox="0 0 1200 56" preserveAspectRatio="none"><path d="M28 28 C200 -10 300 66 440 28 S700 -10 840 28 S1100 60 1180 28"/></svg></div>
+    <ol class="steps">
+      <li class="step reveal">
+        <span class="step-num" aria-hidden="true">1</span>
+        <h3>Crie sua conta</h3>
+        <p>Nome, e-mail e senha. Você recebe uma chave de recuperação: guarde em lugar seguro, porque é com ela que você volta se esquecer a senha.</p>
+      </li>
+      <li class="step reveal reveal-d1">
+        <span class="step-num" aria-hidden="true">2</span>
+        <h3>Monte suas matérias</h3>
+        <p>Cadastre as matérias do período, divida cada uma em assuntos e reserve na agenda os dias de estudo.</p>
+      </li>
+      <li class="step reveal reveal-d2">
+        <span class="step-num" aria-hidden="true">3</span>
+        <h3>Estude e acompanhe</h3>
+        <p>Faça os simulados, marque o que concluiu e veja no painel onde você vai bem e onde precisa voltar.</p>
+      </li>
+    </ol>
+    </div>
+  </div>
+</section>
+<div class="trail" aria-hidden="true"><svg viewBox="0 0 1440 140" preserveAspectRatio="none"><path class="trail-shadow" pathLength="1" d="M260 0 C260 60 560 50 760 76 S1100 100 1200 140"/><path pathLength="1" d="M260 0 C260 60 560 50 760 76 S1100 100 1200 140"/></svg></div>
+
+<section class="sec sec-white" id="acesso" aria-labelledby="acesso-title">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <h2 id="acesso-title">Quanto custa</h2>
+    </div>
+    <div class="access reveal">
+      <div class="access-main">
+        <p class="price">Grátis por tempo limitado</p>
+        <p>Durante o lançamento, todos os recursos ficam liberados para quem criar conta.</p>
+        <ul class="access-list">
+          <li>Agenda de estudos</li>
+          <li>Matérias e assuntos</li>
+          <li>Simulados por assunto</li>
+          <li>Painel de desempenho</li>
+          <li>Assistente de IA</li>
+          <li>Computador e celular</li>
+        </ul>
+        <a class="btn btn-dark" href="/app/cadastro">Criar conta grátis</a>
+      </div>
+      <div class="access-later">
+        <h3>Depois do lançamento</h3>
+        <p>Continua grátis para quem tem <strong>CadÚnico</strong> (Cadastro Único do governo federal). Para os demais, <strong>R$&nbsp;19,90/mês</strong>.</p>
+        <p>Antes de qualquer cobrança, você recebe aviso com antecedência e decide se quer continuar.</p>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="trail" aria-hidden="true"><svg viewBox="0 0 1440 140" preserveAspectRatio="none"><path class="trail-shadow" pathLength="1" d="M1200 0 C1200 50 980 60 760 70 S460 90 380 140"/><path pathLength="1" d="M1200 0 C1200 50 980 60 760 70 S460 90 380 140"/></svg></div>
+
+<section class="sec sec-ice" id="equipe" aria-labelledby="equipe-title">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <h2 id="equipe-title">Feito por estudantes de ADS</h2>
+      <p>O Trilha+ é um projeto acadêmico do curso de Análise e Desenvolvimento de Sistemas da Uninassau Caruaru, apresentado na II Mostra de Laboratórios Inovadores, em 2026.</p>
+    </div>
+    <ul class="team">
+      <li class="member reveal"><span class="avatar" aria-hidden="true">LH</span><strong>Luiz Henrique</strong><span class="role">Gestão do projeto</span></li>
+      <li class="member reveal reveal-d1"><span class="avatar" aria-hidden="true">AV</span><strong>Allan Victor</strong><span class="role">Back-end e banco de dados</span></li>
+      <li class="member reveal reveal-d2"><span class="avatar" aria-hidden="true">GH</span><strong>Gabriel Henrique</strong><span class="role">Front-end</span></li>
+      <li class="member reveal reveal-d1"><span class="avatar" aria-hidden="true">PF</span><strong>Pedro Francisco</strong><span class="role">Back-end e testes (QA)</span></li>
+      <li class="member reveal reveal-d2"><span class="avatar" aria-hidden="true">VS</span><strong>Vinicius Santos</strong><span class="role">Front-end</span></li>
+    </ul>
+    <p class="advisor reveal">Professor orientador: <strong>Antônio Almeida</strong></p>
+  </div>
+</section>
+
+<section class="sec sec-white" id="duvidas" aria-labelledby="duvidas-title">
+  <div class="wrap faq-grid">
+    <div class="sec-head reveal">
+      <h2 id="duvidas-title">Perguntas frequentes</h2>
+      <p>Não achou sua resposta? Mande uma mensagem no direct do <a href="https://www.instagram.com/trilhamais.com.br/" target="_blank" rel="noopener">Instagram</a>.</p>
+    </div>
+    <div class="faq reveal reveal-d1">
+      <details>
+        <summary>É grátis mesmo?</summary>
+        <div class="answer"><p>Sim, por tempo limitado, durante o lançamento. Depois, continua grátis para quem tem CadÚnico. Para os demais, o Plano Estudante vai custar R$ 19,90/mês, e qualquer mudança será avisada antes.</p></div>
+      </details>
+      <details>
+        <summary>Preciso instalar alguma coisa?</summary>
+        <div class="answer"><p>Não. O Trilha+ abre no navegador do computador e do celular. É só entrar com seu e-mail e senha.</p></div>
+      </details>
+      <details>
+        <summary>O que vocês fazem com meus dados?</summary>
+        <div class="answer"><p>Usamos só para a sua conta funcionar. Não pedimos CPF, endereço nem telefone, e não vendemos dados. No Perfil, você pode baixar seus dados ou excluir a conta quando quiser. Os detalhes estão na <a href="/privacidade">Política de Privacidade</a>.</p></div>
+      </details>
+      <details>
+        <summary>A IA pode errar?</summary>
+        <div class="answer"><p>Sim. O assistente apoia o estudo, mas não substitui o professor. Confira as respostas com o material da disciplina e não envie dados pessoais no chat.</p></div>
+      </details>
+      <details>
+        <summary>Esqueci a senha. E agora?</summary>
+        <div class="answer"><p>Use a chave de recuperação que você recebeu ao criar a conta. Sem a chave e sem a senha, a equipe não consegue recuperar a conta.</p></div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section class="sec cta" id="comecar" aria-labelledby="cta-title">
+  <div class="contours" aria-hidden="true"><svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice"><path d="M1238 250 L1237 256 L1235 261 L1232 266 L1229 271 L1225 276 L1220 280 L1216 284 L1211 288 L1206 292 L1201 295 L1196 298 L1190 301 L1184 303 L1177 305 L1170 306 L1164 307 L1157 307 L1150 307 L1143 307 L1136 307 L1130 307 L1122 306 L1115 305 L1108 304 L1101 301 L1095 299 L1089 295 L1085 291 L1081 286 L1078 281 L1077 275 L1076 270 L1075 265 L1075 260 L1074 255 L1074 250 L1073 245 L1073 240 L1073 235 L1073 229 L1075 224 L1077 219 L1081 214 L1085 210 L1090 206 L1096 202 L1102 199 L1108 197 L1115 194 L1122 192 L1129 191 L1136 190 L1143 189 L1150 189 L1157 190 L1164 191 L1171 193 L1177 196 L1182 199 L1188 202 L1193 205 L1197 208 L1202 211 L1207 214 L1213 218 L1218 221 L1223 225 L1228 229 L1232 234 L1236 239 L1237 244 L1238 250Z"/>
+<path d="M1324 250 L1322 261 L1317 272 L1311 282 L1303 291 L1295 300 L1287 309 L1279 317 L1270 325 L1261 332 L1251 339 L1240 345 L1228 350 L1216 354 L1203 357 L1190 360 L1176 361 L1163 362 L1150 362 L1137 362 L1123 363 L1109 363 L1095 362 L1081 360 L1066 357 L1053 353 L1041 346 L1030 339 L1022 330 L1016 320 L1011 309 L1009 299 L1007 289 L1005 279 L1004 269 L1002 260 L1000 250 L998 240 L996 230 L996 219 L997 209 L1000 198 L1006 188 L1013 179 L1022 170 L1032 163 L1044 156 L1056 150 L1068 145 L1081 141 L1094 137 L1108 133 L1122 131 L1136 130 L1150 130 L1164 132 L1177 135 L1190 140 L1202 145 L1212 151 L1222 157 L1232 163 L1242 169 L1252 174 L1263 180 L1275 185 L1286 192 L1297 199 L1307 208 L1315 217 L1321 228 L1324 239 L1324 250Z"/>
+<path d="M1410 250 L1405 267 L1397 282 L1387 297 L1376 311 L1365 324 L1353 337 L1341 349 L1329 361 L1315 372 L1300 382 L1284 391 L1266 399 L1247 404 L1228 409 L1208 412 L1189 414 L1170 416 L1150 417 L1130 419 L1110 420 L1088 420 L1067 420 L1045 417 L1024 412 L1004 405 L986 394 L972 382 L961 368 L953 352 L947 337 L943 321 L940 307 L937 292 L934 278 L930 264 L925 250 L921 235 L918 220 L917 204 L919 188 L924 172 L933 157 L945 143 L959 131 L975 120 L992 110 L1010 101 L1028 94 L1047 86 L1067 80 L1087 76 L1108 72 L1129 71 L1150 72 L1171 76 L1190 82 L1208 89 L1225 97 L1241 106 L1256 114 L1271 122 L1287 129 L1303 136 L1321 144 L1340 152 L1358 161 L1375 172 L1390 185 L1402 200 L1409 216 L1411 233 L1410 250Z"/>
+<path d="M1494 250 L1486 272 L1475 292 L1462 312 L1448 330 L1434 348 L1419 365 L1404 382 L1387 398 L1369 412 L1349 426 L1327 437 L1303 446 L1278 453 L1253 459 L1227 463 L1201 466 L1176 470 L1150 473 L1123 476 L1095 479 L1067 481 L1037 480 L1008 476 L980 468 L954 457 L933 442 L915 424 L902 404 L893 383 L886 363 L881 343 L876 324 L870 305 L863 287 L855 269 L847 250 L840 230 L836 209 L835 187 L838 166 L847 145 L860 126 L876 108 L896 92 L917 77 L940 64 L963 52 L988 42 L1013 32 L1039 24 L1066 17 L1094 14 L1122 14 L1150 16 L1177 22 L1202 31 L1226 41 L1247 52 L1268 63 L1288 72 L1310 81 L1332 89 L1357 97 L1382 106 L1409 116 L1434 128 L1457 144 L1476 162 L1490 183 L1497 205 L1499 227 L1494 250Z"/>
+<path d="M1576 250 L1565 277 L1550 302 L1534 326 L1518 349 L1502 371 L1485 393 L1466 414 L1446 434 L1423 452 L1397 468 L1369 482 L1339 492 L1308 501 L1277 508 L1245 513 L1214 519 L1182 525 L1150 531 L1116 537 L1081 542 L1044 544 L1006 542 L970 536 L936 525 L906 508 L881 488 L861 464 L847 438 L837 412 L829 387 L822 363 L813 341 L803 319 L791 297 L778 274 L766 250 L756 224 L751 198 L751 171 L757 144 L769 118 L786 94 L808 73 L833 53 L860 35 L888 19 L917 3 L947 -11 L978 -23 L1011 -33 L1045 -40 L1080 -43 L1115 -42 L1150 -37 L1183 -28 L1213 -17 L1242 -4 L1268 9 L1294 21 L1321 31 L1349 39 L1380 47 L1413 55 L1448 65 L1483 77 L1515 94 L1543 114 L1565 138 L1579 165 L1585 193 L1584 222 L1576 250Z"/>
+<path d="M1655 250 L1640 282 L1623 312 L1605 340 L1588 368 L1570 395 L1551 421 L1529 447 L1504 470 L1476 492 L1444 510 L1410 525 L1374 537 L1337 547 L1300 556 L1264 564 L1227 573 L1189 582 L1150 592 L1109 601 L1065 607 L1020 610 L975 607 L932 597 L892 580 L859 558 L832 531 L811 501 L796 470 L785 440 L774 411 L763 384 L750 358 L734 333 L715 307 L697 279 L681 250 L669 219 L663 186 L665 154 L674 122 L691 91 L714 63 L741 38 L771 14 L803 -7 L836 -28 L870 -47 L905 -64 L943 -79 L983 -90 L1025 -97 L1067 -99 L1109 -95 L1150 -87 L1188 -74 L1224 -60 L1257 -46 L1289 -32 L1321 -21 L1354 -12 L1391 -5 L1431 2 L1474 10 L1518 21 L1561 37 L1600 58 L1631 84 L1654 114 L1667 147 L1671 182 L1666 217 L1655 250Z"/>
+<path d="M1730 250 L1713 286 L1694 321 L1676 354 L1658 387 L1638 419 L1617 450 L1591 479 L1562 506 L1528 530 L1490 550 L1449 567 L1408 580 L1365 592 L1324 604 L1282 616 L1240 629 L1196 643 L1150 656 L1101 668 L1049 676 L995 678 L943 671 L894 656 L851 634 L815 604 L787 571 L766 535 L749 499 L735 465 L721 433 L704 404 L684 376 L660 347 L635 317 L611 285 L591 250 L577 213 L573 175 L578 136 L592 100 L614 65 L642 33 L674 3 L709 -24 L745 -50 L783 -74 L822 -97 L864 -117 L908 -134 L956 -146 L1005 -151 L1055 -151 L1104 -144 L1150 -132 L1193 -117 L1233 -100 L1271 -85 L1309 -73 L1348 -64 L1390 -58 L1437 -53 L1487 -48 L1541 -39 L1594 -26 L1644 -6 L1687 20 L1721 53 L1743 90 L1753 130 L1753 171 L1744 211 L1730 250Z"/>
+<path d="M1802 250 L1783 291 L1765 330 L1747 368 L1728 406 L1707 442 L1683 478 L1653 511 L1618 541 L1578 567 L1534 589 L1487 607 L1440 623 L1394 637 L1348 653 L1302 670 L1254 688 L1204 708 L1150 726 L1092 740 L1032 747 L970 746 L912 735 L858 714 L812 683 L775 647 L746 606 L724 565 L706 526 L688 490 L667 456 L643 425 L614 395 L581 363 L549 329 L520 291 L497 250 L484 207 L482 163 L492 119 L511 78 L539 39 L572 3 L608 -31 L647 -63 L687 -93 L729 -122 L774 -148 L822 -171 L874 -188 L929 -199 L986 -202 L1043 -198 L1098 -187 L1150 -172 L1198 -155 L1242 -138 L1286 -125 L1330 -115 L1377 -110 L1429 -108 L1487 -106 L1549 -102 L1613 -93 L1674 -76 L1730 -51 L1776 -18 L1809 22 L1828 67 L1835 114 L1830 161 L1818 207 L1802 250Z"/>
+<path d="M1871 250 L1853 296 L1835 340 L1818 383 L1799 425 L1776 466 L1748 506 L1713 542 L1672 574 L1625 602 L1575 625 L1524 646 L1473 664 L1423 683 L1373 704 L1323 728 L1270 753 L1212 777 L1150 799 L1083 814 L1014 820 L946 814 L882 796 L825 766 L777 728 L740 684 L710 638 L686 593 L664 552 L640 515 L611 480 L577 448 L538 415 L496 380 L457 341 L424 297 L401 250 L390 201 L392 151 L407 103 L432 56 L465 13 L502 -27 L542 -65 L584 -102 L628 -137 L675 -170 L726 -199 L781 -223 L841 -240 L905 -249 L970 -249 L1033 -240 L1094 -226 L1150 -208 L1202 -190 L1251 -175 L1300 -165 L1352 -161 L1409 -162 L1473 -164 L1543 -165 L1616 -161 L1690 -150 L1758 -128 L1818 -96 L1864 -55 L1894 -7 L1909 45 L1911 99 L1903 152 L1888 202 L1871 250Z"/>
+<path d="M213 820 L213 826 L212 832 L209 838 L206 843 L202 848 L198 853 L193 858 L189 863 L184 867 L179 872 L174 877 L168 881 L161 886 L154 889 L146 892 L138 894 L129 894 L120 893 L112 891 L104 889 L96 886 L89 882 L83 879 L76 876 L70 873 L63 870 L56 867 L49 864 L42 860 L36 856 L31 851 L27 845 L24 839 L22 833 L21 826 L22 820 L23 814 L24 807 L26 801 L28 795 L32 789 L36 784 L40 779 L46 774 L53 770 L60 767 L68 765 L76 763 L83 762 L91 761 L98 760 L105 759 L113 757 L120 755 L128 754 L136 752 L145 751 L154 751 L163 752 L172 754 L180 757 L186 761 L192 766 L197 772 L201 778 L204 784 L206 790 L209 796 L210 802 L212 808 L213 814 L213 820Z"/>
+<path d="M294 820 L292 831 L289 842 L285 853 L279 863 L272 872 L264 882 L256 891 L248 900 L240 909 L231 918 L221 927 L210 936 L198 944 L184 950 L169 954 L152 956 L136 956 L120 954 L105 950 L90 945 L77 940 L64 934 L51 929 L39 924 L26 919 L13 915 L-1 909 L-14 903 L-26 896 L-37 887 L-47 878 L-54 867 L-59 855 L-61 844 L-62 832 L-62 820 L-61 808 L-58 797 L-55 785 L-50 774 L-44 763 L-37 753 L-27 744 L-16 736 L-3 729 L11 723 L25 719 L39 716 L53 714 L67 711 L80 708 L93 705 L106 701 L120 697 L135 693 L151 690 L168 689 L184 689 L201 692 L216 696 L230 703 L242 712 L252 722 L261 732 L268 743 L274 754 L279 765 L284 776 L288 787 L291 798 L293 809 L294 820Z"/>
+<path d="M373 820 L371 836 L366 852 L359 867 L350 882 L340 896 L330 910 L320 924 L309 938 L298 952 L285 966 L271 980 L254 992 L235 1003 L214 1011 L191 1016 L167 1017 L143 1016 L120 1012 L98 1006 L77 999 L58 992 L39 985 L20 979 L1 973 L-19 967 L-40 961 L-60 953 L-79 944 L-97 932 L-112 919 L-125 905 L-134 888 L-140 872 L-144 854 L-145 837 L-145 820 L-144 803 L-140 786 L-136 769 L-129 753 L-120 737 L-108 723 L-93 709 L-76 698 L-57 689 L-37 682 L-16 676 L4 671 L23 666 L42 662 L61 656 L79 650 L99 643 L120 636 L142 630 L166 626 L191 624 L215 626 L239 631 L261 640 L280 651 L297 664 L311 679 L323 694 L333 709 L343 725 L351 740 L359 756 L365 771 L370 787 L373 804 L373 820Z"/>
+<path d="M452 820 L448 841 L441 862 L432 882 L421 901 L410 920 L398 939 L385 958 L372 977 L358 996 L341 1015 L322 1033 L299 1049 L272 1062 L243 1071 L212 1076 L181 1076 L150 1073 L120 1067 L92 1060 L65 1052 L39 1044 L13 1037 L-12 1030 L-39 1024 L-66 1017 L-94 1009 L-121 998 L-146 985 L-168 970 L-187 951 L-202 931 L-213 910 L-221 888 L-226 865 L-228 843 L-228 820 L-227 798 L-223 775 L-217 753 L-208 732 L-194 711 L-178 693 L-157 676 L-134 662 L-108 651 L-82 641 L-56 634 L-31 626 L-7 619 L17 611 L41 601 L65 591 L92 580 L120 571 L150 563 L182 559 L215 559 L246 563 L276 572 L304 584 L328 600 L349 618 L367 637 L384 656 L398 676 L411 696 L423 715 L434 735 L443 756 L449 777 L452 798 L452 820Z"/>
+<path d="M529 820 L524 846 L515 872 L504 896 L492 920 L480 944 L467 968 L453 993 L438 1018 L420 1043 L399 1066 L373 1088 L343 1106 L309 1120 L272 1129 L233 1133 L194 1132 L156 1127 L120 1120 L86 1112 L52 1104 L20 1096 L-13 1090 L-46 1084 L-80 1077 L-115 1069 L-150 1058 L-183 1044 L-213 1027 L-240 1007 L-262 983 L-279 958 L-292 931 L-301 904 L-307 876 L-311 848 L-312 820 L-311 792 L-306 764 L-298 737 L-285 711 L-267 686 L-245 664 L-218 645 L-189 628 L-158 614 L-126 603 L-95 592 L-66 582 L-37 570 L-9 557 L20 543 L51 529 L84 515 L120 503 L158 495 L198 491 L238 493 L277 501 L313 513 L346 530 L375 551 L400 573 L423 596 L443 619 L462 643 L480 666 L496 690 L509 715 L520 741 L528 767 L531 793 L529 820Z"/></svg></div>
+  <div class="wrap cta-grid">
+    <div class="reveal">
+      <h2 id="cta-title">Monte sua primeira semana de estudos</h2>
+      <p>Crie a conta, cadastre as matérias do período e veja seu progresso aparecer no painel.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="/app/cadastro">Criar conta grátis</a>
+        <a class="btn btn-ghost" href="/app/entrar">Entrar</a>
+      </div>
+      <p class="cta-ig">Acompanhe as novidades no Instagram: <a href="https://www.instagram.com/trilhamais.com.br/" target="_blank" rel="noopener">@trilhamais.com.br</a></p>
+    </div>
+    <div class="qr-card reveal reveal-d1">
+      <img src="/assets/qr.png" width="600" height="600" loading="lazy" alt="QR code que abre trilha-mais.vercel.app">
+      <p>Aponte a câmera e abra no celular</p>
+    </div>
+  </div>
+</section>
+
+</main>
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-top">
+      <div class="footer-about">
+        <a class="brand" href="/" aria-label="Trilha+, página inicial">
+          <span class="brand-mark"><img src="/assets/logo.png" alt="" width="28" height="30" loading="lazy"></span>
+          <span>Trilha<b>+</b></span>
+        </a>
+        <p>Projeto acadêmico, sem fins lucrativos nesta fase.</p>
+      </div>
+      <ul class="footer-links">
+        <li><a href="/termos">Termos de Uso</a></li>
+        <li><a href="/privacidade">Política de Privacidade</a></li>
+        <li><a href="https://www.instagram.com/trilhamais.com.br/" target="_blank" rel="noopener">Instagram</a></li>
+        <li><a href="/app/entrar">Entrar</a></li>
+      </ul>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; <span data-year>2026</span> Trilha+. Feito por estudantes de ADS da Uninassau Caruaru.</span>
+      <span>Contato pelo direct do Instagram <a href="https://www.instagram.com/trilhamais.com.br/" target="_blank" rel="noopener">@trilhamais.com.br</a></span>
+    </div>
+  </div>
+</footer>
+<script src="/assets/site.js" defer></script>
+</body>
+</html>

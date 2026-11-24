@@ -20,6 +20,12 @@ public class RegisterRequest {
     @Size(min = 6, message = "A senha deve conter no mínimo 6 caracteres.")
     private String password;
 
+    // LGPD/ECA: o estudante precisa aceitar os Termos de Uso e a Politica de Privacidade
+    private Boolean acceptedTerms;
+
+    // Versao dos termos aceitos (opcional; padrao definido no servico)
+    private String termsVersion;
+
     public RegisterRequest() {
     }
 
@@ -27,6 +33,11 @@ public class RegisterRequest {
         this.name = name;
         this.email = email;
         this.password = password;
+    }
+
+    public RegisterRequest(String name, String email, String password, Boolean acceptedTerms) {
+        this(name, email, password);
+        this.acceptedTerms = acceptedTerms;
     }
 
     public String getName() {
@@ -51,5 +62,21 @@ public class RegisterRequest {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Boolean getAcceptedTerms() {
+        return acceptedTerms;
+    }
+
+    public void setAcceptedTerms(Boolean acceptedTerms) {
+        this.acceptedTerms = acceptedTerms;
+    }
+
+    public String getTermsVersion() {
+        return termsVersion;
+    }
+
+    public void setTermsVersion(String termsVersion) {
+        this.termsVersion = termsVersion;
     }
 }
