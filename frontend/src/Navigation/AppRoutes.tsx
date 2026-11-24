@@ -100,12 +100,22 @@ export default function AppRoutes() {
         setRotaInicial('Login');
         return;
       }
+      // Confere a sessão, mas sem prender a abertura: se o servidor estiver
+      // acordando (plano gratuito), entra mesmo assim e as telas carregam depois.
+      // Só volta para o login se o servidor disser que a sessão não vale mais.
+      const tempoEsgotado = new Promise<'demorou'>((ok) => setTimeout(() => ok('demorou'), 6000));
       try {
-        await usersApi.me();
+        const verificacao = usersApi.me();
+        verificacao.catch(() => {}); // se responder depois do prazo, o 401 já é tratado no api.ts
+        await Promise.race([verificacao, tempoEsgotado]);
         setRotaInicial('Home');
-      } catch {
-        await authApi.logout();
-        setRotaInicial('Login');
+      } catch (e: any) {
+        if (e?.status === 401 || e?.status === 403 || e?.status === 404) {
+          await authApi.logout();
+          setRotaInicial('Login');
+        } else {
+          setRotaInicial('Home');
+        }
       }
     })();
 

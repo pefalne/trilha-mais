@@ -21,6 +21,15 @@ import BarraNavegacao, { ChaveAba } from '../components/BarraNavegacao';
 
 const opcoesAvatar = ['🎓', '📚', '🚀', '🧠', '⭐', '🦉', '💡', '🔥'];
 
+// Equipe do projeto (só nome e função; sem matrícula ou outro dado pessoal)
+const EQUIPE: [string, string][] = [
+  ['Luiz Henrique', 'Gestão do projeto'],
+  ['Allan Victor', 'Back-end e banco de dados'],
+  ['Gabriel Henrique', 'Front-end'],
+  ['Pedro Francisco', 'Back-end e QA'],
+  ['Vinicius Santos', 'Front-end'],
+];
+
 export default function Perfil() {
   const navigation = useNavigation<any>();
   const [usuario, setUsuario] = useState<UserResponse | null>(null);
@@ -51,6 +60,7 @@ export default function Perfil() {
   const [senhaExcluir, setSenhaExcluir] = useState('');
   const [erroExcluir, setErroExcluir] = useState('');
   const [processando, setProcessando] = useState(false);
+  const [sobreVisivel, setSobreVisivel] = useState(false);
 
   const gerarChave = async () => {
     const ok = await confirmar(
@@ -261,6 +271,12 @@ export default function Perfil() {
             <Text style={styles.chevron}>›</Text>
           </TouchableOpacity>
 
+          <TouchableOpacity style={styles.menuItem} activeOpacity={0.7} onPress={() => setSobreVisivel(true)}>
+            <Text style={styles.menuIcon}>ℹ️</Text>
+            <Text style={styles.menuText}>Sobre o Trilha+</Text>
+            <Text style={styles.chevron}>›</Text>
+          </TouchableOpacity>
+
           <TouchableOpacity style={styles.menuItem} activeOpacity={0.7} onPress={() => abrirPaginaDoSite('/termos')}>
             <Text style={styles.menuIcon}>📄</Text>
             <Text style={styles.menuText}>Termos de Uso</Text>
@@ -398,6 +414,40 @@ export default function Perfil() {
         </View>
       </Modal>
 
+      <Modal visible={sobreVisivel} transparent animationType="fade" onRequestClose={() => setSobreVisivel(false)}>
+        <View style={styles.fundoModal}>
+          <View style={styles.conteudoModal}>
+            <ScrollView style={{ maxHeight: 520 }}>
+              <Text style={styles.tituloModal}>Sobre o Trilha+</Text>
+              <Text style={sobre.texto}>
+                Plataforma de estudos que junta agenda, matérias, simulados, desempenho e um assistente de IA.
+                Projeto acadêmico do curso de Análise e Desenvolvimento de Sistemas da Uninassau Caruaru,
+                apresentado na II Mostra de Laboratórios Inovadores (2026). Sem fins lucrativos nesta fase.
+              </Text>
+              <Text style={sobre.subtitulo}>Equipe</Text>
+              {EQUIPE.map(([nome, papel]) => (
+                <View key={nome} style={sobre.linha}>
+                  <Text style={sobre.nome}>{nome}</Text>
+                  <Text style={sobre.papel}>{papel}</Text>
+                </View>
+              ))}
+              <Text style={sobre.orientador}>Professor orientador: Antônio Almeida</Text>
+              <Text style={sobre.subtitulo}>Contato</Text>
+              <Text style={sobre.link} onPress={() => abrirPaginaDoSite('https://www.instagram.com/trilhamais.com.br/')}>
+                Instagram @trilhamais.com.br
+              </Text>
+              <Text style={sobre.link} onPress={() => abrirPaginaDoSite('/')}>trilha-mais.vercel.app</Text>
+              <Text style={sobre.versao}>Versão web · novembro de 2026</Text>
+            </ScrollView>
+            <View style={styles.acoesModal}>
+              <TouchableOpacity style={styles.botaoSalvar} onPress={() => setSobreVisivel(false)}>
+                <Text style={styles.textoSalvar}>Fechar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
       <Modal visible={excluirVisivel} transparent animationType="fade" onRequestClose={() => setExcluirVisivel(false)}>
         <KeyboardAvoidingView style={styles.fundoModal} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
           <View style={styles.conteudoModal}>
@@ -434,6 +484,17 @@ export default function Perfil() {
     </SafeAreaView>
   );
 }
+
+const sobre = StyleSheet.create({
+  texto: { color: '#4A5568', fontSize: 14, lineHeight: 21, marginBottom: 14 },
+  subtitulo: { fontWeight: '800', color: '#0B1B3F', fontSize: 15, marginTop: 6, marginBottom: 8 },
+  linha: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 7, borderBottomWidth: 1, borderBottomColor: '#EEF1F6' },
+  nome: { fontWeight: '700', color: '#1F2937', fontSize: 14 },
+  papel: { color: '#6B7280', fontSize: 13, flexShrink: 1, textAlign: 'right', marginLeft: 12 },
+  orientador: { color: '#4A5568', fontSize: 13, marginTop: 10, marginBottom: 8 },
+  link: { color: '#2563EB', fontWeight: '700', fontSize: 14, paddingVertical: 4 },
+  versao: { color: '#9CA3AF', fontSize: 12, marginTop: 10 },
+});
 
 const styles = StyleSheet.create({
   valorMenu: {

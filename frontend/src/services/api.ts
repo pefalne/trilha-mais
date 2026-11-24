@@ -50,15 +50,21 @@ export async function request<T>(path: string, opts: Options = {}): Promise<T> {
   let res: Response | null = null;
 
   for (let tentativa = 0; tentativa <= esperas.length; tentativa++) {
+    // Cada tentativa tem tempo máximo: uma conexão travada não pode segurar a tela para sempre
+    const controle = new AbortController();
+    const limite = setTimeout(() => controle.abort(), 25000);
     try {
       res = await fetch(`${BASE_URL}${path}`, {
         method,
         headers,
         body: body ? JSON.stringify(body) : undefined,
+        signal: controle.signal,
       });
       if (![502, 503, 504].includes(res.status)) break;
     } catch {
       res = null;
+    } finally {
+      clearTimeout(limite);
     }
     if (tentativa < esperas.length) {
       await new Promise((resolve) => setTimeout(resolve, esperas[tentativa]));

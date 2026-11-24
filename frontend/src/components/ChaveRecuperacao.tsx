@@ -14,7 +14,7 @@ export function abrirPaginaDoSite(caminho: string) {
     (window as any).open(caminho, '_blank', 'noopener');
     return;
   }
-  Linking.openURL(SITE + caminho);
+  Linking.openURL(caminho.startsWith('http') ? caminho : SITE + caminho);
 }
 
 // Salva um texto como arquivo (só no navegador).

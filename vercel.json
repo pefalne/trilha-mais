@@ -5,12 +5,8 @@
   "trailingSlash": false,
   "rewrites": [
     {
-      "source": "/app",
-      "destination": "/app.html"
-    },
-    {
       "source": "/app/:caminho*",
-      "destination": "/app.html"
+      "destination": "/app"
     }
   ],
   "headers": [

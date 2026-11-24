@@ -19,13 +19,13 @@ O projeto aplica na prática conceitos avançados de **Engenharia de Software, A
 
 ## 👥 Equipe do Projeto
 
-| Integrante | Matrícula | Responsabilidade no Projeto |
-| :--- | :---: | :--- |
-| **Pedro Francisco Alves Neto** | **01864946** | **Arquitetura, Desenvolvimento e Testes do Back-end** |
-| **Allan Victor Morais De Lima** | **01813117** | **Desenvolvimento do Back-end e Integrações** |
-| **Gabriel Henrique da Silva** | **01777141** | **Desenvolvimento Front-end / Mobile (React Native)** |
-| **Vinicius Santos Cansanção** | **01813852** | **Desenvolvimento Front-end / Mobile (React Native)** |
-| **Luiz Henrique Manoel da Silva** | **01777463** | **Documentação Técnica e Gestão do Projeto** |
+| Integrante | Responsabilidade no Projeto |
+| :--- | :--- |
+| **Pedro Francisco Alves Neto** | **Arquitetura, Desenvolvimento e Testes do Back-end** |
+| **Allan Victor Morais De Lima** | **Desenvolvimento do Back-end e Integrações** |
+| **Gabriel Henrique da Silva** | **Desenvolvimento Front-end / Mobile (React Native)** |
+| **Vinicius Santos Cansanção** | **Desenvolvimento Front-end / Mobile (React Native)** |
+| **Luiz Henrique Manoel da Silva** | **Documentação Técnica e Gestão do Projeto** |
 
 ---
 
