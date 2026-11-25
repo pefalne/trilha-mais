@@ -15,6 +15,11 @@ export const tokenStorage = {
   clear: () => AsyncStorage.removeItem(TOKEN_KEY),
 };
 
+// Acorda o servidor gratuito assim que o app abre, antes de a pessoa tocar em "Entrar".
+export function acordarServidor() {
+  fetch(`${BASE_URL}/api/health`).catch(() => {});
+}
+
 export class ApiError extends Error {
   status: number;
   constructor(message: string, status: number) {
@@ -123,11 +128,27 @@ export const authApi = {
   // Cria a conta (com o aceite dos Termos/Política), entra e devolve a chave de
   // recuperação, que o servidor mostra uma única vez.
   async register(name: string, email: string, password: string) {
-    const criado = await request<UserResponse & { recoveryKey?: string }>('/api/users/register', {
-      method: 'POST',
-      body: { name, email, password, acceptedTerms: true, termsVersion: VERSAO_TERMOS },
-      auth: false,
-    });
+    let criado: (UserResponse & { recoveryKey?: string }) | null = null;
+    try {
+      criado = await request<UserResponse & { recoveryKey?: string }>('/api/users/register', {
+        method: 'POST',
+        body: { name, email, password, acceptedTerms: true, termsVersion: VERSAO_TERMOS },
+        auth: false,
+      });
+    } catch (e) {
+      // Servidor acordando: a 1ª tentativa cria a conta, mas a resposta não chega e a
+      // repetição volta 409 ("e-mail já cadastrado"). Se a senha confere, a conta é dela: entra.
+      if (!(e instanceof ApiError) || e.status !== 409) throw e;
+      try {
+        const user = await authApi.login(email, password);
+        return { user, recoveryKey: null };
+      } catch {
+        throw new ApiError(
+          'Este e-mail já tem conta. Entre com sua senha ou use "Esqueci minha senha".',
+          409,
+        );
+      }
+    }
     const user = await authApi.login(email, password);
     return { user, recoveryKey: criado?.recoveryKey ?? null };
   },

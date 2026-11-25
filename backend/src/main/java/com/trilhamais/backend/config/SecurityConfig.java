@@ -51,6 +51,7 @@ public class SecurityConfig {
                 // Regras de autorizacao das rotas
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
+                                "/api/health",
                                 "/api/users/register",
                                 "/api/auth/login",
                                 "/api/auth/forgot-password",
