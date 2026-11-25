@@ -17,7 +17,7 @@ import QuizScreen from '../pages/TelaQuiz';
 import ResultadoScreen from '../pages/TelaResultado';
 
 import { authApi, definirAoExpirarSessao, usersApi } from '../services/api';
-import useDesktop from '../utils/useDesktop';
+import useDesktop, { useLarguraAmpla } from '../utils/useDesktop';
 import MenuLateral from '../components/desktop/MenuLateral';
 import PainelMarca from '../components/desktop/PainelMarca';
 
@@ -68,6 +68,7 @@ export default function AppRoutes() {
   const [rotaInicial, setRotaInicial] = useState<'Login' | 'Home' | null>(null);
   const [rotaAtual, setRotaAtual] = useState<string | null>(null);
   const desktop = useDesktop();
+  const ampla = useLarguraAmpla();
   const atualizarRota = () => setRotaAtual(navegacaoRef.getCurrentRoute()?.name ?? null);
 
   // Proteção das rotas: sem login, só as telas de entrada; tela que perdeu os
@@ -156,13 +157,13 @@ export default function AppRoutes() {
     <View style={desktop ? estilos.pagina : estilos.cheio}>
       {desktop ? (
         entrada ? (
-          <PainelMarca />
+          ampla ? <PainelMarca /> : null
         ) : (
           <MenuLateral rotaAtual={rota} aoIr={(nome) => navegacaoRef.isReady() && navegacaoRef.navigate(nome)} />
         )
       ) : null}
-      <View style={desktop ? (entrada ? estilos.ladoEntrada : estilos.area) : estilos.cheio}>
-        <View style={desktop && !entrada ? estilos.conteudo : estilos.cheio}>
+      <View style={desktop ? (entrada ? (ampla ? estilos.ladoEntrada : estilos.entradaEstreita) : estilos.area) : estilos.cheio}>
+        <View style={desktop && !entrada ? estilos.conteudo : desktop && !ampla ? estilos.colunaEntrada : estilos.cheio}>
     <NavigationContainer
       ref={navegacaoRef}
       linking={linking}
@@ -239,4 +240,7 @@ const estilos = StyleSheet.create({
     backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E4E7EC',
   },
   ladoEntrada: { width: 560, backgroundColor: '#FFFFFF' },
+  // Janela de PC estreita: login/cadastro numa coluna centralizada, sem o painel da marca
+  entradaEstreita: { flex: 1, alignItems: 'center' },
+  colunaEntrada: { flex: 1, width: '100%', maxWidth: 480, backgroundColor: '#FFFFFF' },
 });
