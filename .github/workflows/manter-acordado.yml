@@ -1,0 +1,16 @@
+name: Manter API acordada
+
+# O Render gratuito desliga o back depois de 15 min sem uso.
+# Este agendamento chama a API a cada 10 min para ela não dormir.
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Chamar /api/health
+        run: curl -fsS --max-time 120 --retry 3 --retry-delay 10 https://trilha-mais-backend.onrender.com/api/health
